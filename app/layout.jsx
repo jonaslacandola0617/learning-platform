@@ -1,7 +1,8 @@
 import "../src/App.css";
+import { siteUrl } from "../src/site";
 
 export const metadata = {
-  metadataBase: new URL("https://learning-platform.vercel.app"),
+  metadataBase: new URL(siteUrl),
   title: {
     default: "Tuklas | Matuto sa bawat laro",
     template: "%s | Tuklas",

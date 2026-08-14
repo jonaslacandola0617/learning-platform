@@ -7,14 +7,14 @@ export const metadata = {
     default: "Tuklas | Learn through every game",
     template: "%s | Tuklas",
   },
-  description: "Isang masayang Filipino learning platform na may interactive educational games para sa bawat aralin.",
+  description: "A playful learning platform with editable, topic-based educational games.",
   applicationName: "Tuklas Learning Platform",
-  keywords: ["learning platform", "educational games", "Filipino", "GMRC", "Hula ang Salita"],
+  keywords: ["learning platform", "educational games", "vocabulary game", "word games", "Tuklas"],
   openGraph: {
     title: "Tuklas Learning Platform",
     description: "Learn, play, and grow through interactive educational games with editable, topic-based lessons.",
     type: "website",
-    locale: "fil_PH",
+    locale: "en_PH",
   },
   icons: { icon: "/favicon.svg" },
 };

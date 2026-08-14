@@ -4,9 +4,10 @@ const ALLOWED_TOPICS = {
   adjectives: "describing words (adjectives)",
   objects: "everyday objects",
   values: "positive values and character traits",
+  mixed: "a balanced mix of animals, action verbs, describing words, everyday objects, and positive values",
 };
 
-const ALLOWED_COUNTS = new Set([5, 10, 15]);
+const ALLOWED_COUNTS = new Set([5, 10, 15, 20]);
 const ALLOWED_WORD = /^[A-Z]{2,14}$/;
 const MAX_EXCLUDED_WORDS = 240;
 const MAX_GENERATION_ATTEMPTS = 3;
@@ -104,7 +105,7 @@ export async function POST(request) {
               responseMimeType: "application/json",
               responseSchema: wordSchema,
               temperature: 1.15,
-              maxOutputTokens: 2048,
+              maxOutputTokens: count === 20 ? 4096 : 2048,
             },
           }),
           cache: "no-store",

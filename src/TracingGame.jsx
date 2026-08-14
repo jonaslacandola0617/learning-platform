@@ -282,7 +282,6 @@ export function TracingGame({ items, startIndex, onExit, brand }) {
             <div className="trace-colors"><span>Pencil color</span><div>{COLORS.map((choice) => <button key={choice} aria-label={`Use ${choice} pencil`} className={color === choice ? "selected" : ""} style={{ "--pencil-color": choice }} onClick={() => setColor(choice)} />)}</div></div>
             <div className="trace-bottom-controls">
               <div className="trace-navigation"><span>{currentIndex + 1} of {items.length}</span><button className="secondary-button" onClick={() => goTo(currentIndex - 1)} disabled={!currentIndex}>← Previous</button><button className="primary-button trace-finish-button" onClick={finishItem} disabled={!ready}>{currentIndex === items.length - 1 ? "Finish" : "Next →"}</button></div>
-              {!ready && <p className="trace-tip">Cover more of the dotted guide to unlock the next level.</p>}
             </div>
           </aside>
         </div>

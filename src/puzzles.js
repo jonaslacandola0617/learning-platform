@@ -1,5 +1,5 @@
 function img(name) {
-  return `/images/${name}.png`
+  return `https://raw.githubusercontent.com/jonaslacandola0617/learning-platform/main/public/images/${name}.png`
 }
 
 export const puzzles = [

@@ -76,6 +76,10 @@ button { cursor:pointer; }
 .setup-section-title h2 { margin:0; font:800 21px 'Baloo 2'; }
 .setup-section-title p { margin:0; color:var(--muted); font-size:12px; }
 .sample-button { margin-left:auto; border:1px solid var(--line); background:var(--sky); color:var(--blue); border-radius:10px; padding:9px 12px; font-size:11px; font-weight:900; }
+.word-source-actions { display:flex; gap:8px; margin-left:auto; }
+.word-source-actions .sample-button { margin-left:0; white-space:nowrap; }
+.generate-button { color:white; border-color:var(--blue); background:var(--blue); }
+.shuffle-button { background:white; }
 .count-options { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; }
 .count-options button { border:2px solid var(--line); background:#fbfdff; border-radius:16px; padding:16px; color:var(--muted); }
 .count-options button strong,.count-options button small { display:block; }
@@ -199,7 +203,8 @@ button { cursor:pointer; }
   .setup-shell { margin-top:28px; }
   .setup-section { padding:18px; }
   .setup-section-title { align-items:flex-start; flex-wrap:wrap; }
-  .sample-button { width:100%; margin-left:49px; }
+  .word-source-actions { width:calc(100% - 49px); margin-left:49px; flex-direction:column; }
+  .word-source-actions .sample-button { width:100%; }
   .topic-options { grid-template-columns:1fr 1fr; }
   .topic-options button { min-height:120px; }
   .word-entry { grid-template-columns:32px 1fr; }

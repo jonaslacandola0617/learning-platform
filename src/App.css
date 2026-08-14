@@ -208,7 +208,7 @@ button { cursor:pointer; }
 .trace-progress-orb.ready { color:white; border-color:#a8e6bc; background:var(--green); animation:pop .35s ease; }
 .trace-progress-orb.ready span { color:white; }
 .tracing-board-wrap { overflow:hidden; border:1px solid var(--line); border-radius:28px; background:white; box-shadow:var(--shadow); }
-.tracing-workspace { display:grid; grid-template-columns:minmax(0,1fr) 245px; align-items:start; gap:18px; }
+.tracing-workspace { display:grid; grid-template-columns:minmax(0,1fr) 190px; align-items:start; gap:18px; }
 .tracing-board { width:100%; display:block; aspect-ratio:5/3; max-height:620px; cursor:crosshair; touch-action:none; user-select:none; }
 .trace-guide-path { fill:none; stroke:#b8cce5; stroke-width:28; stroke-linecap:round; stroke-linejoin:round; stroke-dasharray:4 20; }
 .trace-guide-character { fill:rgba(213,227,244,.35); stroke:#b8cce5; stroke-width:5; stroke-dasharray:7 12; paint-order:stroke; text-anchor:middle; font:800 250px 'Baloo 2'; }
@@ -217,18 +217,18 @@ button { cursor:pointer; }
 .tracing-board-tools { display:flex; justify-content:flex-end; gap:8px; padding:12px 16px; border-top:1px solid var(--line); background:#f8fbff; }
 .tracing-board-tools button { border:1px solid var(--line); border-radius:10px; padding:8px 13px; color:var(--blue); background:white; font-size:11px; font-weight:900; }
 .tracing-board-tools button:disabled { opacity:.4; cursor:default; }
-.tracing-controls { position:sticky; top:92px; align-self:stretch; display:flex; flex-direction:column; align-items:stretch; justify-content:center; gap:24px; padding:22px 18px; border:1px solid var(--line); border-radius:22px; background:white; box-shadow:0 7px 24px rgba(20,65,123,.07); }
-.trace-colors { display:flex; flex-direction:column; align-items:flex-start; gap:11px; }
-.trace-colors > span { color:var(--muted); font-size:11px; font-weight:900; text-transform:uppercase; }
-.trace-colors > div { display:flex; gap:7px; }
-.trace-colors button { width:31px; height:31px; padding:0; border:4px solid white; border-radius:50%; background:var(--pencil-color); box-shadow:0 0 0 1px var(--line); }
+.tracing-controls { position:sticky; top:92px; align-self:stretch; display:flex; flex-direction:column; align-items:center; justify-content:flex-start; gap:22px; padding:24px 18px; border:1px solid var(--line); border-radius:22px; background:white; box-shadow:0 7px 24px rgba(20,65,123,.07); }
+.trace-colors { width:100%; display:flex; flex-direction:column; align-items:center; gap:13px; padding-bottom:21px; border-bottom:1px solid var(--line); }
+.trace-colors > span { color:var(--muted); font-size:11px; font-weight:900; text-align:center; text-transform:uppercase; }
+.trace-colors > div { display:flex; flex-direction:column; align-items:center; gap:12px; }
+.trace-colors button { width:38px; height:38px; padding:0; border:4px solid white; border-radius:50%; background:var(--pencil-color); box-shadow:0 0 0 1px var(--line); }
 .trace-colors button.selected { box-shadow:0 0 0 3px var(--navy); transform:scale(.88); }
-.trace-navigation { display:flex; flex-direction:column; align-items:stretch; gap:10px; }
+.trace-navigation { width:100%; display:flex; flex-direction:column; align-items:stretch; gap:10px; }
 .trace-navigation > span { order:-1; color:var(--muted); font-size:11px; font-weight:900; white-space:nowrap; text-align:center; text-transform:uppercase; letter-spacing:.7px; }
 .trace-navigation button { width:100%; }
 .trace-navigation button:disabled { opacity:.42; cursor:default; transform:none; box-shadow:none; }
-.trace-finish-button { min-width:155px; }
-.trace-tip { margin:0; padding:11px; border-radius:11px; color:#795b0b; background:#fff7d6; font-size:10px; line-height:1.45; text-align:center; }
+.trace-finish-button { min-width:0; }
+.trace-tip { width:100%; margin:auto 0 0; padding:11px 9px; border-radius:11px; color:#795b0b; background:#fff7d6; font-size:10px; line-height:1.45; text-align:center; }
 @keyframes bob { 50% { transform:translateY(-10px) rotate(2deg); } }
 @keyframes pulse { 50% { transform:scale(1.1) rotate(8deg); } }
 @keyframes wrong { 20%,60% { transform:translateX(-5px); } 40%,80% { transform:translateX(5px); } }
@@ -250,6 +250,9 @@ button { cursor:pointer; }
   .tracing-workspace { grid-template-columns:1fr; }
   .tracing-controls { position:static; min-height:auto; flex-direction:row; align-items:center; justify-content:space-between; }
   .trace-colors { flex-direction:row; align-items:center; }
+  .trace-colors { width:auto; padding:0; border:0; }
+  .trace-colors > div { flex-direction:row; gap:7px; }
+  .trace-colors button { width:31px; height:31px; }
   .trace-navigation { flex-direction:row; align-items:center; }
   .trace-navigation > span { order:0; }
   .trace-tip { display:none; }

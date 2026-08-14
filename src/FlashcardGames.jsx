@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import { getBuiltInDictionary, WORD_TOPICS } from "./topicWords";
 
@@ -14,9 +13,7 @@ const LETTER_CARDS = [
   ["Y", "Yo-yo", "🪀"], ["Z", "Zebra", "🦓"],
 ].map(([letter, word, emoji]) => ({ letter, word, emoji }));
 
-const FLIP_CACHE_KEY = "tuklas.flip-word-cache.v2";
-const flipVisualCache = new Map();
-const LEGACY_INEXACT_EMOJIS = new Set(["⚡", "🪵"]);
+const FLIP_CACHE_KEY = "tuklas.flip-word-cache.v1";
 
 function shuffle(items) {
   const copy = [...items];
@@ -60,47 +57,6 @@ function saveFlipCache(entries) {
   } catch {
     // The cards still work for this session when storage is unavailable.
   }
-}
-
-function needsGeneratedVisual(card) {
-  if (typeof card?.useGeneratedVisual === "boolean") return card.useGeneratedVisual;
-  return LEGACY_INEXACT_EMOJIS.has(card?.emoji);
-}
-
-function FlipCardVisual({ card }) {
-  const shouldGenerate = needsGeneratedVisual(card);
-  const cacheKey = `v2:${card.topic}:${card.answer}:${card.hint}`;
-  const [image, setImage] = useState(() => flipVisualCache.get(cacheKey) || "");
-
-  useEffect(() => {
-    let active = true;
-    if (!shouldGenerate || image) return () => { active = false; };
-
-    const params = new URLSearchParams({
-      word: card.answer,
-      clue: card.hint,
-      topic: card.topic || "mixed",
-      variant: "flipcard-icon",
-      v: "2",
-    });
-    fetch(`/api/generate-image?${params}`)
-      .then((response) => response.ok ? response.json() : Promise.reject())
-      .then((data) => {
-        if (!active || typeof data.image !== "string") return;
-        flipVisualCache.set(cacheKey, data.image);
-        setImage(data.image);
-      })
-      .catch(() => {
-        // Keep the instant emoji when Cloudflare is unavailable or out of quota.
-      });
-
-    return () => { active = false; };
-  }, [cacheKey, card.answer, card.hint, card.topic, image, shouldGenerate]);
-
-  if (image) {
-    return <Image className="flip-generated-visual" src={image} width={420} height={420} unoptimized alt="Word card visual" />;
-  }
-  return <b className={shouldGenerate ? "visual-loading" : ""}>{card.emoji}</b>;
 }
 
 export function LetterFlashSetup({ brand, onBack, onStart }) {
@@ -233,7 +189,7 @@ export function WordFlipGame({ brand, topic, onExit }) {
         <div className="flash-stage-heading"><div><span className="eyebrow">WORD FLIP CARDS</span><h1>What word is this?</h1><p>Guess from the emoji, then tap the card to check.</p></div>{generationStatus && <span className="batch-status">{generationStatus}</span>}</div>
         <button className={`word-flip-card ${flipped ? "flipped" : ""}`} onClick={() => setFlipped((current) => !current)} aria-label={flipped ? `Answer: ${card.answer}. Tap to see the emoji.` : "Tap to reveal the answer"}>
           <span className="flip-card-inner">
-            <span className="flip-card-face flip-card-front"><FlipCardVisual key={`${card.topic}:${card.answer}`} card={card} /><small>Tap to reveal</small></span>
+            <span className="flip-card-face flip-card-front"><b>{card.emoji}</b><small>Tap to reveal</small></span>
             <span className="flip-card-face flip-card-back"><small>The answer is</small><strong>{card.answer}</strong><p>{card.hint}</p><em>Tap to see the emoji</em></span>
           </span>
         </button>

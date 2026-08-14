@@ -97,13 +97,6 @@ const topicWords = {
 // These words only have a symbolic or related emoji, rather than an emoji that
 // literally shows the concept. Word Flip Cards can replace these with a cached
 // Cloudflare visual; the other games continue using their instant emoji cards.
-const GENERATED_VISUAL_WORDS = new Set([
-  "BRAVE", "BUILD", "CARING", "CLEAN", "FAIR", "FRIENDLY", "FUNNY",
-  "GENTLE", "GRATEFUL", "HARDWORKING", "HELPFUL", "HONEST", "KIND",
-  "LOUD", "PATIENT", "PILLOW", "POLITE", "QUICK", "QUIET", "RESPONSIBLE",
-  "SMALL", "SOFT", "TABLE", "TALL", "THOUGHTFUL",
-]);
-
 export function getBuiltInWords(topicId, count, randomize = false) {
   const source = topicWords[topicId] || topicWords.animals;
   const ordered = randomize
@@ -117,7 +110,6 @@ export function getBuiltInWords(topicId, count, randomize = false) {
     emojiLabel: `${answer.toLocaleLowerCase("en-US")} illustration`,
     description: `Which word from ${WORD_TOPICS.find((topic) => topic.id === topicId)?.label || "this topic"} matches this clue?`,
     topic: topicId,
-    useGeneratedVisual: GENERATED_VISUAL_WORDS.has(answer),
   }));
 }
 

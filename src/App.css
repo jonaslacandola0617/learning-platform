@@ -282,8 +282,6 @@ button { cursor:pointer; }
 .flip-card-face { position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; overflow:hidden; border:3px solid white; border-radius:31px; backface-visibility:hidden; box-shadow:var(--shadow); }
 .flip-card-front { color:var(--blue); background:radial-gradient(circle at 50% 40%,#fff8ca,transparent 38%),linear-gradient(145deg,#f1f8ff,#ffffff); }
 .flip-card-front b { font-size:clamp(170px,30vw,250px); line-height:1; filter:drop-shadow(0 17px 20px rgba(25,59,105,.15)); }
-.flip-card-front b.visual-loading { animation:visual-wait 1.4s ease-in-out infinite; }
-.flip-generated-visual { width:min(76%,360px); height:auto; aspect-ratio:1; border-radius:28px; object-fit:contain; background:#fff; }
 .flip-card-front small { margin-top:28px; padding:8px 14px; border-radius:20px; color:var(--muted); background:white; font-size:11px; font-weight:900; text-transform:uppercase; letter-spacing:1px; }
 .flip-card-back { padding:45px; color:white; background:linear-gradient(145deg,#1052aa,#2478d5); transform:rotateY(180deg); }
 .flip-card-back > small { color:#cce5ff; font-weight:900; text-transform:uppercase; letter-spacing:1.6px; }
@@ -296,7 +294,6 @@ button { cursor:pointer; }
 @keyframes pop { 50% { transform:scale(1.08); } }
 @keyframes fade-in { from { opacity:0; } }
 @keyframes fade-up { from { opacity:0; transform:translateY(8px); } }
-@keyframes visual-wait { 50% { transform:scale(.96); opacity:.72; } }
 @keyframes confetti { to { transform:translate(var(--drift),105vh) rotate(720deg); opacity:0; } }
 @media (max-width:850px) {
   .welcome-panel { grid-template-columns:1fr; min-height:auto; }

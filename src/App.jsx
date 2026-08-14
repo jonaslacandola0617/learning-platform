@@ -145,7 +145,7 @@ function GameSetup({ onBack, onStart }) {
       setEntries(data.words.map((item) => ({
         ...item,
         emojiLabel: `${item.answer.toLocaleLowerCase("en-US")} illustration`,
-        description: `Which ${WORD_TOPICS.find((topicItem) => topicItem.id === nextTopic)?.label.toLocaleLowerCase("en-US")} matches this clue?`,
+        description: `Which word from ${WORD_TOPICS.find((topicItem) => topicItem.id === nextTopic)?.label || "this topic"} matches this clue?`,
       })));
       setGenerationNote(`Fresh AI word set ready—edit anything you want.`);
     } catch {
@@ -168,9 +168,21 @@ function GameSetup({ onBack, onStart }) {
   }
 
   function updateEntry(index, field, value) {
-    setEntries((current) => current.map((entry, entryIndex) => entryIndex === index
-      ? { ...entry, [field]: field === "answer" ? normalizeWord(value) : value.slice(0, 100) }
-      : entry));
+    setEntries((current) => current.map((entry, entryIndex) => {
+      if (entryIndex !== index) return entry;
+      if (field !== "answer") return { ...entry, hint: value.slice(0, 100) };
+
+      const answer = normalizeWord(value);
+      const selectedTopic = WORD_TOPICS.find((item) => item.id === topic);
+      return {
+        ...entry,
+        answer,
+        image: null,
+        emoji: selectedTopic?.icon || "✨",
+        emojiLabel: answer ? `${answer.toLocaleLowerCase("en-US")} illustration` : "Custom word illustration",
+        description: `Which word from ${selectedTopic?.label || "this topic"} matches this clue?`,
+      };
+    }));
   }
 
   function submit(event) {

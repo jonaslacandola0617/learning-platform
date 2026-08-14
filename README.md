@@ -5,10 +5,11 @@ An expandable Filipino learning platform built with Next.js App Router. The firs
 ## Current features
 
 - Learning dashboard with one playable game and space for future activities
-- Topic-based setup for 5, 10, or 15 automatically generated words
+- Topic-based setup for 5, 10, or 15 words
 - Animals, action words, describing words, everyday objects, and good values
 - Every generated word and clue remains editable before the game starts
-- Built-in word banks keep generation instant even without an API key
+- Free shuffling from built-in dictionaries and locally cached Gemini words
+- Explicit Generate action adds only words absent from both the dictionary and cache
 - Automatic letter pools, revealed letters, hints, scoring, and completion flow
 - Existing illustrations and instant visual fallbacks
 - Optional Gemini word generation and Cloudflare Workers AI illustrations
@@ -25,7 +26,7 @@ npm run dev
 
 AI generation is opt-in. Copy `.env.example` to `.env.local` for local development, then add the same server-side variables to the Vercel project for production. Never expose any of these keys through a `NEXT_PUBLIC_` environment variable.
 
-Add `GEMINI_API_KEY` to generate fresh, structured word sets and clues with Gemini. Without the key—or whenever the free quota is unavailable—the app automatically falls back to the included topic banks.
+Add `GEMINI_API_KEY` to expand the saved word library with fresh, structured words and clues. Topic and round-count changes never call Gemini: they shuffle the built-in dictionary and locally cached generations. Generate excludes every existing dictionary and cached answer before making an API request. Without a key, all built-in dictionaries remain playable.
 
 Add `CLOUDFLARE_ACCOUNT_ID` and `CLOUDFLARE_API_TOKEN` to enable the optional AI image mode. It uses `@cf/black-forest-labs/flux-1-schnell` by default. Successful responses are CDN-cacheable for 30 days, reducing repeated generation for the same word and clue. If Cloudflare is unavailable or its daily allocation is exhausted, the game automatically falls back to its visual card.
 

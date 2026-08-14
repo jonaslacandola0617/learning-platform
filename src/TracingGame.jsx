@@ -276,13 +276,14 @@ export function TracingGame({ items, startIndex, onExit, brand }) {
       <main className="tracing-game-shell">
         <section className="tracing-game-heading"><div><span className="eyebrow">TRACING PRACTICE</span><h1>{item.character ? `Trace ${item.label}` : `${item.label} — Level ${item.level}`}</h1><p>{item.note} {item.path ? "Start on the green dot" : "Start anywhere on the guide"} and trace carefully.</p></div><div className={`trace-progress-orb ${ready ? "ready" : ""}`}><strong>{progress}%</strong><span>{ready ? "Ready!" : "Keep tracing"}</span></div></section>
 
-        <TracingBoard key={`${item.id}-${resetKey}`} item={item} color={color} onProgress={setProgress} resetKey={resetKey} />
-
-        <section className="tracing-controls">
-          <div className="trace-colors"><span>Pencil color</span><div>{COLORS.map((choice) => <button key={choice} aria-label={`Use ${choice} pencil`} className={color === choice ? "selected" : ""} style={{ "--pencil-color": choice }} onClick={() => setColor(choice)} />)}</div></div>
-          <div className="trace-navigation"><button className="secondary-button" onClick={() => goTo(currentIndex - 1)} disabled={!currentIndex}>← Previous</button><span>{currentIndex + 1} of {items.length}</span><button className="primary-button trace-finish-button" onClick={finishItem} disabled={!ready}>{currentIndex === items.length - 1 ? "Complete set" : "Done — Next →"}</button></div>
-        </section>
-        {!ready && <p className="trace-tip">Tip: cover more of the dotted guide to unlock the next activity.</p>}
+        <div className="tracing-workspace">
+          <TracingBoard key={`${item.id}-${resetKey}`} item={item} color={color} onProgress={setProgress} resetKey={resetKey} />
+          <aside className="tracing-controls">
+            <div className="trace-colors"><span>Pencil color</span><div>{COLORS.map((choice) => <button key={choice} aria-label={`Use ${choice} pencil`} className={color === choice ? "selected" : ""} style={{ "--pencil-color": choice }} onClick={() => setColor(choice)} />)}</div></div>
+            <div className="trace-navigation"><span>{currentIndex + 1} of {items.length}</span><button className="secondary-button" onClick={() => goTo(currentIndex - 1)} disabled={!currentIndex}>← Previous</button><button className="primary-button trace-finish-button" onClick={finishItem} disabled={!ready}>{currentIndex === items.length - 1 ? "Complete set" : "Done — Next →"}</button></div>
+            {!ready && <p className="trace-tip">Cover more of the dotted guide to unlock the next level.</p>}
+          </aside>
+        </div>
       </main>
       {showComplete && <div className="modal-overlay"><div className="modal"><div className="modal-trophy">✍️</div><span className="eyebrow">SET COMPLETE</span><h2>Beautiful tracing!</h2><p>You practiced every item in this tracing set.</p><div className="result-score"><strong>{items.length}</strong><span>tracing activities</span></div><div className="modal-actions"><button className="secondary-button" onClick={onExit}>Games</button><button className="primary-button" onClick={() => { setShowComplete(false); setCompleted([]); goTo(0); }}>Practice again</button></div></div></div>}
     </div>

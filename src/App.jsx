@@ -441,7 +441,7 @@ function Game({ gamePuzzles, imageMode, onExit }) {
         <section className="game-left">
           <div className="puzzle-label-top"><span className="label-badge">{currentIdx + 1} / {gamePuzzles.length}</span><span className="label-text">Which word matches the clue?</span></div>
           <div className="image-card">
-            {displayImage ? <Image src={displayImage} alt={puzzle.emojiLabel} className="puzzle-img" fill sizes="(max-width: 850px) 100vw, 52vw" unoptimized /> : loadingImages[puzzle.id] ? <div className="generating-scene"><span className="sparkle-loader">✦</span><strong>AI is drawing…</strong><small>This can take up to two minutes.</small></div> : <div className="emoji-scene"><div className="emoji-big">{puzzle.emoji}</div><div className="emoji-caption">{puzzle.emojiLabel}</div>{imageErrors[puzzle.id] && <small className="image-error">AI unavailable—we used the visual card instead.</small>}</div>}
+            {displayImage ? <Image src={displayImage} alt="Visual clue for this word" className="puzzle-img" fill sizes="(max-width: 850px) 100vw, 52vw" unoptimized /> : loadingImages[puzzle.id] ? <div className="generating-scene"><span className="sparkle-loader">✦</span><strong>AI is drawing…</strong><small>This can take up to two minutes.</small></div> : <div className="emoji-scene"><div className="emoji-big">{puzzle.emoji}</div>{imageErrors[puzzle.id] && <small className="image-error">AI unavailable—we used the visual card instead.</small>}</div>}
             {status === "correct" && <div className="image-overlay-win"><div className="win-check">✓</div><div className="win-label">{puzzle.answer}</div></div>}
           </div>
           <p className="puzzle-desc">{puzzle.description}</p>

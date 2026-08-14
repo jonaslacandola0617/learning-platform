@@ -22,13 +22,14 @@ export async function POST(request) {
     return json({ error: "Invalid request body." }, 400);
   }
 
-  const word = String(body?.word || "").toLocaleUpperCase("fil-PH").trim();
+  const word = String(body?.word || "").toLocaleUpperCase("en-US").trim();
   const clue = String(body?.clue || "").trim().slice(0, 120);
+  const topic = String(body?.topic || "general vocabulary").trim().slice(0, 40);
   if (!ALLOWED_WORD.test(word)) {
     return json({ error: "Invalid word." }, 400);
   }
 
-  const prompt = `A warm, polished children's educational illustration for a Filipino elementary classroom word game. Show one clear everyday scene that communicates the positive character trait "${word}". ${clue ? `Context: ${clue}.` : ""} Filipino children, cheerful but calm expressions, inclusive classroom storybook style, rich blue yellow and green palette, soft natural lighting, clean composition, landscape framing, no written words, no letters, no logo, no watermark.`;
+  const prompt = `A warm, polished children's educational illustration for an elementary vocabulary game. Show one clear, child-friendly scene that visually represents the ${topic} word "${word}". ${clue ? `Context: ${clue}.` : ""} Cheerful but calm storybook style, rich blue yellow and green palette, soft natural lighting, clean composition, landscape framing, no written words, no letters, no logo, no watermark.`;
 
   try {
     const apiResponse = await fetch("https://api.openai.com/v1/images/generations", {

@@ -4,7 +4,7 @@ import { siteUrl } from "../src/site";
 export const metadata = {
   metadataBase: new URL(siteUrl),
   title: {
-    default: "Tuklas | Matuto sa bawat laro",
+    default: "Tuklas | Learn through every game",
     template: "%s | Tuklas",
   },
   description: "Isang masayang Filipino learning platform na may interactive educational games para sa bawat aralin.",
@@ -12,7 +12,7 @@ export const metadata = {
   keywords: ["learning platform", "educational games", "Filipino", "GMRC", "Hula ang Salita"],
   openGraph: {
     title: "Tuklas Learning Platform",
-    description: "Matuto, maglaro, at umunlad sa interactive Filipino educational games.",
+    description: "Learn, play, and grow through interactive educational games with editable, topic-based lessons.",
     type: "website",
     locale: "fil_PH",
   },

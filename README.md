@@ -5,7 +5,10 @@ An expandable Filipino learning platform built with Next.js App Router. The firs
 ## Current features
 
 - Learning dashboard with one playable game and space for future activities
-- Teacher/parent setup for 5, 10, or 15 custom words
+- Topic-based setup for 5, 10, or 15 automatically generated words
+- Animals, action words, describing words, everyday objects, and good values
+- Every generated word and clue remains editable before the game starts
+- Built-in word banks keep generation instant even without an API key
 - Automatic letter pools, revealed letters, hints, scoring, and completion flow
 - Existing illustrations and instant visual fallbacks
 - Optional OpenAI image generation through a server-side Vercel function
@@ -22,7 +25,9 @@ npm run dev
 
 AI generation is opt-in. Add `OPENAI_API_KEY` to `.env.local` for local development and to the Vercel deployment environment for production. Never expose the key through a `NEXT_PUBLIC_` environment variable.
 
-The app uses `gpt-image-1-mini` with low-quality landscape output to keep per-round cost low. If the key is absent or generation fails, the game automatically falls back to its visual card.
+When an API key is configured, the app uses OpenAI Structured Outputs to create fresh word sets and clues. Without a key, it automatically falls back to the included topic banks.
+
+AI image mode uses `gpt-image-1-mini` with low-quality landscape output to keep per-round cost low. If image generation is unavailable, the game automatically falls back to its visual card.
 
 Before enabling AI images on a public deployment, add a Vercel Firewall rate limit and an OpenAI project budget so unauthenticated requests cannot create unbounded charges.
 

@@ -27,7 +27,7 @@ AI generation is opt-in. Copy `.env.example` to `.env.local` for local developme
 
 Add `GEMINI_API_KEY` to generate fresh, structured word sets and clues with Gemini. Without the key—or whenever the free quota is unavailable—the app automatically falls back to the included topic banks.
 
-Add `CLOUDFLARE_ACCOUNT_ID` and `CLOUDFLARE_API_TOKEN` to enable the optional AI image mode. It uses `@cf/black-forest-labs/flux-1-schnell` by default with a stable seed. Successful responses are CDN-cacheable for 30 days, reducing repeated generation for the same word and clue. If Cloudflare is unavailable or its daily allocation is exhausted, the game automatically falls back to its visual card.
+Add `CLOUDFLARE_ACCOUNT_ID` and `CLOUDFLARE_API_TOKEN` to enable the optional AI image mode. It uses `@cf/black-forest-labs/flux-1-schnell` by default. Successful responses are CDN-cacheable for 30 days, reducing repeated generation for the same word and clue. If Cloudflare is unavailable or its daily allocation is exhausted, the game automatically falls back to its visual card.
 
 Free API allowances and limits can change. Before enabling AI images on a public deployment, add a Vercel Firewall rate limit to protect the public endpoint from abuse.
 

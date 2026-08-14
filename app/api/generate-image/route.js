@@ -16,15 +16,6 @@ function json(data, status = 200, cacheable = false) {
   });
 }
 
-function stableSeed(value) {
-  let hash = 2166136261;
-  for (let index = 0; index < value.length; index += 1) {
-    hash ^= value.charCodeAt(index);
-    hash = Math.imul(hash, 16777619);
-  }
-  return hash >>> 0;
-}
-
 export async function GET(request) {
   const accountId = process.env.CLOUDFLARE_ACCOUNT_ID;
   const apiToken = process.env.CLOUDFLARE_API_TOKEN;
@@ -59,7 +50,6 @@ export async function GET(request) {
         body: JSON.stringify({
           prompt,
           steps: 4,
-          seed: stableSeed(`${topic}:${word}:${clue}`),
         }),
         cache: "no-store",
       },

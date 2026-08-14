@@ -1,11 +1,5 @@
-// Detect if running inside Electron (set by preload.cjs)
-// If yes, use appimg:// so Electron loads from the folder NEXT TO the .exe
-// If no (plain HTML), use ./images/ relative path
 function img(name) {
-  if (typeof window !== 'undefined' && window.isElectron) {
-    return `appimg:///${name}.png`
-  }
-  return `./images/${name}.png`
+  return `https://raw.githubusercontent.com/jonaslacandola0617/learning-platform/main/public/images/${name}.png`
 }
 
 export const puzzles = [
@@ -13,10 +7,10 @@ export const puzzles = [
     id: 1,
     image: img('matalino'),
     emoji: "📚",
-    emojiLabel: "Batang nag-aaral na may mga libro",
-    answer: "MATALINO",
-    hint: "Palaging matatalino ang mga batang nagbabasa!",
-    description: "Ang batang ito ay laging handa at nagdadala ng mga aklat para sa klase.",
+    emojiLabel: "A child studying with books",
+    answer: "INTELLIGENT",
+    hint: "Reading and studying can help you become smarter.",
+    description: "This learner is prepared and brings books to class.",
     revealed: [0, 4, 6],
     poolExtra: ["B", "U", "S", "G", "E", "K"],
   },
@@ -24,44 +18,44 @@ export const puzzles = [
     id: 2,
     image: img('matulungin'),
     emoji: "🎁",
-    emojiLabel: "Mga batang nagbibigay ng donasyon",
-    answer: "MATULUNGIN",
-    hint: "Ang pagbibigay ay isang magandang katangian!",
-    description: "Ang mga batang ito ay nag-aambag ng mga bagay para sa donations box.",
-    revealed: [2, 4, 8, 9],
+    emojiLabel: "Children giving donations",
+    answer: "HELPFUL",
+    hint: "Giving your time or things can help other people.",
+    description: "These children are adding useful items to a donation box.",
+    revealed: [0, 3, 6],
     poolExtra: ["B", "S", "O", "K", "P", "R"],
   },
   {
     id: 3,
     image: img('malikhain'),
     emoji: "🎨",
-    emojiLabel: "Mga batang nagpipinta at lumilikha",
-    answer: "MALIKHAIN",
-    hint: "Gumagawa ng bagong sining at ideya!",
-    description: "Ang mga batang ito ay nagpipinta at lumilikha ng magagandang obra.",
-    revealed: [1, 4, 5, 8],
+    emojiLabel: "Children painting and creating art",
+    answer: "CREATIVE",
+    hint: "This word describes someone who makes new art and ideas.",
+    description: "These children are painting and making original artwork.",
+    revealed: [1, 4, 7],
     poolExtra: ["T", "S", "B", "O", "U", "R"],
   },
   {
     id: 4,
     image: img('mapanuri'),
     emoji: "🔍",
-    emojiLabel: "Batang nagtatanong at nagmamasid",
-    answer: "MAPANURI",
-    hint: "Mahilig magtanong at mag-obserba!",
-    description: "Ang batang ito ay laging nagtatanong at nagmamasid upang matuto pa.",
-    revealed: [0, 2, 4, 6],
+    emojiLabel: "A child asking questions and observing",
+    answer: "CURIOUS",
+    hint: "This person enjoys asking questions and discovering new things.",
+    description: "This learner asks questions and observes carefully to learn more.",
+    revealed: [0, 3, 6],
     poolExtra: ["T", "L", "S", "B", "O", "G"],
   },
   {
     id: 5,
     image: img('masipag'),
     emoji: "🌿",
-    emojiLabel: "Mga batang naglilinis ng kalikasan",
-    answer: "MASIPAG",
-    hint: "Walang pagod sa paggawa para sa kalikasan!",
-    description: "Ang mga batang ito ay naglilinis ng kapaligiran.",
-    revealed: [2, 4, 6],
+    emojiLabel: "Children cleaning their surroundings",
+    answer: "HARDWORKING",
+    hint: "This person keeps doing their best until the job is finished.",
+    description: "These children are working together to clean their surroundings.",
+    revealed: [0, 4, 7, 10],
     poolExtra: ["T", "L", "N", "O", "B", "U"],
   },
 ]

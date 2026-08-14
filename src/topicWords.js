@@ -109,3 +109,7 @@ export function getBuiltInWords(topicId, count, randomize = false) {
     topic: topicId,
   }));
 }
+
+export function getBuiltInDictionary(topicId) {
+  return getBuiltInWords(topicId, Number.MAX_SAFE_INTEGER);
+}

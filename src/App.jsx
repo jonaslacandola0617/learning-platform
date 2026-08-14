@@ -5,6 +5,7 @@ import { useEffect, useMemo, useRef, useState, useSyncExternalStore } from "reac
 import { puzzles as starterPuzzles } from "./puzzles";
 import { getBuiltInDictionary, getBuiltInWords, WORD_TOPICS } from "./topicWords";
 import { TracingGame, TracingSetup } from "./TracingGame";
+import { LetterFlashGame, LetterFlashSetup, WordFlipGame, WordFlipSetup } from "./FlashcardGames";
 
 const EXTRA_LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
 const IMAGE_PROMPT_VERSION = "2";
@@ -125,7 +126,7 @@ function Brand({ compact = false }) {
   );
 }
 
-function Dashboard({ onSelectWordGame, onSelectTracing }) {
+function Dashboard({ onSelectWordGame, onSelectTracing, onSelectLetters, onSelectWordFlip }) {
   return (
     <div className="platform-page">
       <nav className="platform-nav">
@@ -151,7 +152,7 @@ function Dashboard({ onSelectWordGame, onSelectTracing }) {
         </section>
 
         <section className="games-section">
-          <div className="section-heading"><div><span className="eyebrow">GAMES</span><h2>What would you like to play?</h2></div><span className="game-count">2 games available</span></div>
+          <div className="section-heading"><div><span className="eyebrow">GAMES</span><h2>What would you like to play?</h2></div><span className="game-count">4 games available</span></div>
           <div className="game-grid">
             <article className="game-card featured-game" onClick={onSelectWordGame}>
               <div className="game-visual word-visual"><span className="letter-tile">M</span><span className="letter-tile">A</span><span className="letter-tile">B</span><span className="letter-tile">A</span><span className="letter-tile">I</span></div>
@@ -168,9 +169,14 @@ function Dashboard({ onSelectWordGame, onSelectTracing }) {
               <div className="game-card-body"><div className="card-tags"><span>Writing</span><span>Motor skills</span></div><h3>Tracing Practice</h3><p>Trace patterns, alphabet letters, and numbers with your finger or mouse.</p><button className="card-play">Play now <span>→</span></button></div>
             </article>
 
-            <article className="game-card coming-card">
-              <div className="game-visual match-visual"><span>🍎</span><i>↔</i><span>A</span></div>
-              <div className="game-card-body"><div className="card-tags"><span>Memory</span></div><h3>Find the Match</h3><p>Match each picture with the correct word.</p><span className="soon-label">Coming soon</span></div>
+            <article className="game-card featured-game letter-card-game" onClick={onSelectLetters}>
+              <div className="game-visual letter-flash-visual"><span>A</span><div><b>🍎</b><small>APPLE</small></div></div>
+              <div className="game-card-body"><div className="card-tags"><span>Alphabet</span><span>Flashcards</span></div><h3>Letter Flashcards</h3><p>Explore A to Z sequentially or in a random order.</p><button className="card-play">Play now <span>→</span></button></div>
+            </article>
+
+            <article className="game-card featured-game flip-card-game" onClick={onSelectWordFlip}>
+              <div className="game-visual word-flip-visual"><div><span>🐘</span><b>?</b></div><i>↻</i></div>
+              <div className="game-card-body"><div className="card-tags"><span>Vocabulary</span><span>Flip cards</span></div><h3>Word Flip Cards</h3><p>Guess endless emoji words, then flip to reveal each answer.</p><button className="card-play">Play now <span>→</span></button></div>
             </article>
           </div>
         </section>
@@ -469,12 +475,18 @@ export default function App() {
   const [gamePuzzles, setGamePuzzles] = useState(() => starterPuzzles.map(preparePuzzle));
   const [imageMode, setImageMode] = useState("included");
   const [traceSession, setTraceSession] = useState(null);
+  const [letterMode, setLetterMode] = useState("sequential");
+  const [flipTopic, setFlipTopic] = useState("mixed");
   const app = useMemo(() => {
     if (screen === "setup") return <GameSetup onBack={() => setScreen("dashboard")} onStart={(nextPuzzles, mode) => { setGamePuzzles(nextPuzzles); setImageMode(mode); setScreen("game"); }} />;
     if (screen === "game") return <Game gamePuzzles={gamePuzzles} imageMode={imageMode} onExit={() => setScreen("dashboard")} />;
     if (screen === "tracing-setup") return <TracingSetup brand={<Brand compact />} onBack={() => setScreen("dashboard")} onStart={(items, startIndex) => { setTraceSession({ items, startIndex }); setScreen("tracing-game"); }} />;
     if (screen === "tracing-game" && traceSession) return <TracingGame brand={<Brand compact />} items={traceSession.items} startIndex={traceSession.startIndex} onExit={() => setScreen("dashboard")} />;
-    return <Dashboard onSelectWordGame={() => setScreen("setup")} onSelectTracing={() => setScreen("tracing-setup")} />;
-  }, [screen, gamePuzzles, imageMode, traceSession]);
+    if (screen === "letter-setup") return <LetterFlashSetup brand={<Brand compact />} onBack={() => setScreen("dashboard")} onStart={(mode) => { setLetterMode(mode); setScreen("letter-game"); }} />;
+    if (screen === "letter-game") return <LetterFlashGame brand={<Brand compact />} mode={letterMode} onExit={() => setScreen("dashboard")} />;
+    if (screen === "flip-setup") return <WordFlipSetup brand={<Brand compact />} onBack={() => setScreen("dashboard")} onStart={(topic) => { setFlipTopic(topic); setScreen("flip-game"); }} />;
+    if (screen === "flip-game") return <WordFlipGame brand={<Brand compact />} topic={flipTopic} onExit={() => setScreen("dashboard")} />;
+    return <Dashboard onSelectWordGame={() => setScreen("setup")} onSelectTracing={() => setScreen("tracing-setup")} onSelectLetters={() => setScreen("letter-setup")} onSelectWordFlip={() => setScreen("flip-setup")} />;
+  }, [screen, gamePuzzles, imageMode, traceSession, letterMode, flipTopic]);
   return app;
 }

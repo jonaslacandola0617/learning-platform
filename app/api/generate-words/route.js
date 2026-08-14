@@ -8,6 +8,8 @@ const ALLOWED_TOPICS = {
 
 const ALLOWED_COUNTS = new Set([5, 10, 15]);
 const ALLOWED_WORD = /^[A-Z]{2,14}$/;
+const MAX_EXCLUDED_WORDS = 240;
+const MAX_GENERATION_ATTEMPTS = 3;
 
 export const runtime = "nodejs";
 export const maxDuration = 60;
@@ -44,6 +46,13 @@ export async function POST(request) {
     return json({ error: "Choose a valid topic and word count." }, 400);
   }
 
+  const excludedWords = [...new Set(
+    (Array.isArray(body?.excludedWords) ? body.excludedWords : [])
+      .map((word) => String(word || "").toLocaleUpperCase("en-US").replace(/[^A-Z]/g, ""))
+      .filter((word) => ALLOWED_WORD.test(word)),
+  )].slice(-MAX_EXCLUDED_WORDS);
+  const excludedAnswers = new Set(excludedWords);
+
   const wordSchema = {
     type: "OBJECT",
     properties: {
@@ -67,56 +76,68 @@ export async function POST(request) {
 
   const model = process.env.GEMINI_TEXT_MODEL || "gemini-3.5-flash-lite";
 
+  const forbiddenList = excludedWords.length ? excludedWords.join(", ") : "none";
+
   try {
-    const apiResponse = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "x-goog-api-key": process.env.GEMINI_API_KEY,
-        },
-        body: JSON.stringify({
-          systemInstruction: {
-            parts: [{
-              text: "Create safe vocabulary for an elementary learning game. Use common, simple English only. Never use spaces, punctuation, proper names, obscure words, or repeated answers. Keep every answer between 2 and 14 letters. Make each clue one short, child-friendly English sentence. Return one relevant emoji per word.",
+    for (let attempt = 1; attempt <= MAX_GENERATION_ATTEMPTS; attempt += 1) {
+      const apiResponse = await fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "x-goog-api-key": process.env.GEMINI_API_KEY,
+          },
+          body: JSON.stringify({
+            systemInstruction: {
+              parts: [{
+                text: "Create safe vocabulary for an elementary learning game. Use common, simple English only. Never use spaces, punctuation, proper names, obscure words, or repeated answers. Keep every answer between 2 and 14 letters. Make each clue one short, child-friendly English sentence. Return one relevant emoji per word. The forbidden-word list is absolute: never return, reorder, rephrase, or reuse an answer from it.",
+              }],
+            },
+            contents: [{
+              role: "user",
+              parts: [{
+                text: `Create exactly ${count} NEW and varied words about ${ALLOWED_TOPICS[topic]}. Forbidden answers already shown to the learner: ${forbiddenList}. This is variation attempt ${attempt}; choose different concepts, not merely a different order.`,
+              }],
             }],
-          },
-          contents: [{
-            role: "user",
-            parts: [{ text: `Create exactly ${count} unique words about ${ALLOWED_TOPICS[topic]}.` }],
-          }],
-          generationConfig: {
-            responseMimeType: "application/json",
-            responseSchema: wordSchema,
-            temperature: 0.9,
-            maxOutputTokens: 2048,
-          },
-        }),
-        cache: "no-store",
-      },
-    );
+            generationConfig: {
+              responseMimeType: "application/json",
+              responseSchema: wordSchema,
+              temperature: 1.15,
+              maxOutputTokens: 2048,
+            },
+          }),
+          cache: "no-store",
+        },
+      );
 
-    const data = await apiResponse.json();
-    if (!apiResponse.ok) {
-      return json({ error: data.error?.message || "Word generation failed." }, apiResponse.status);
+      const data = await apiResponse.json();
+      if (!apiResponse.ok) {
+        return json({ error: data.error?.message || "Word generation failed." }, apiResponse.status);
+      }
+
+      const outputText = getOutputText(data);
+      const parsed = outputText ? JSON.parse(outputText) : null;
+      const words = parsed?.words?.map((item) => ({
+        answer: String(item.answer || "").toLocaleUpperCase("en-US").replace(/[^A-Z]/g, ""),
+        hint: String(item.hint || "").trim().slice(0, 100),
+        emoji: String(item.emoji || "✨").trim().slice(0, 8),
+        topic,
+      }));
+
+      const uniqueAnswers = new Set(words?.map((item) => item.answer));
+      const isValid = words
+        && words.length === count
+        && uniqueAnswers.size === count
+        && words.every((item) => ALLOWED_WORD.test(item.answer) && item.hint)
+        && words.every((item) => !excludedAnswers.has(item.answer));
+
+      if (isValid) {
+        return json({ words, source: "gemini" });
+      }
     }
 
-    const outputText = getOutputText(data);
-    const parsed = outputText ? JSON.parse(outputText) : null;
-    const words = parsed?.words?.map((item) => ({
-      answer: String(item.answer || "").toLocaleUpperCase("en-US").replace(/[^A-Z]/g, ""),
-      hint: String(item.hint || "").trim().slice(0, 100),
-      emoji: String(item.emoji || "✨").trim().slice(0, 8),
-      topic,
-    }));
-
-    const uniqueAnswers = new Set(words?.map((item) => item.answer));
-    if (!words || words.length !== count || uniqueAnswers.size !== count || words.some((item) => !ALLOWED_WORD.test(item.answer) || !item.hint)) {
-      return json({ error: "The generated word set was invalid. Please try again." }, 502);
-    }
-
-    return json({ words, source: "gemini" });
+    return json({ error: "Gemini repeated previously shown words. Please generate again." }, 502);
   } catch {
     return json({ error: "Could not reach the word generation service." }, 500);
   }

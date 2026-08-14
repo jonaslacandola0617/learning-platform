@@ -20,14 +20,15 @@ function json(data, status = 200) {
 }
 
 function getOutputText(data) {
-  return data.output
-    ?.flatMap((item) => item.content || [])
-    .find((content) => content.type === "output_text")?.text;
+  return data.candidates?.[0]?.content?.parts
+    ?.map((part) => part.text || "")
+    .join("")
+    .trim();
 }
 
 export async function POST(request) {
-  if (!process.env.OPENAI_API_KEY) {
-    return json({ error: "AI word generation is not configured yet." }, 503);
+  if (!process.env.GEMINI_API_KEY) {
+    return json({ error: "Gemini word generation is not configured yet." }, 503);
   }
 
   let body;
@@ -44,49 +45,57 @@ export async function POST(request) {
   }
 
   const wordSchema = {
-    type: "object",
+    type: "OBJECT",
     properties: {
       words: {
-        type: "array",
+        type: "ARRAY",
+        minItems: count,
+        maxItems: count,
         items: {
-          type: "object",
+          type: "OBJECT",
           properties: {
-            answer: { type: "string" },
-            hint: { type: "string" },
-            emoji: { type: "string" },
+            answer: { type: "STRING" },
+            hint: { type: "STRING" },
+            emoji: { type: "STRING" },
           },
           required: ["answer", "hint", "emoji"],
-          additionalProperties: false,
         },
       },
     },
     required: ["words"],
-    additionalProperties: false,
   };
 
+  const model = process.env.GEMINI_TEXT_MODEL || "gemini-3.5-flash-lite";
+
   try {
-    const apiResponse = await fetch("https://api.openai.com/v1/responses", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        model: process.env.OPENAI_TEXT_MODEL || "gpt-5-mini",
-        store: false,
-        instructions: "Create safe vocabulary for an elementary learning game. Use common, simple English only. Never use spaces, punctuation, proper names, obscure words, or repeated answers. Keep every answer between 2 and 14 letters. Make each clue one short, child-friendly English sentence. Return one relevant emoji per word.",
-        input: `Create exactly ${count} unique words about ${ALLOWED_TOPICS[topic]}.`,
-        text: {
-          format: {
-            type: "json_schema",
-            name: "word_game_set",
-            strict: true,
-            schema: wordSchema,
-          },
+    const apiResponse = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-goog-api-key": process.env.GEMINI_API_KEY,
         },
-      }),
-      cache: "no-store",
-    });
+        body: JSON.stringify({
+          systemInstruction: {
+            parts: [{
+              text: "Create safe vocabulary for an elementary learning game. Use common, simple English only. Never use spaces, punctuation, proper names, obscure words, or repeated answers. Keep every answer between 2 and 14 letters. Make each clue one short, child-friendly English sentence. Return one relevant emoji per word.",
+            }],
+          },
+          contents: [{
+            role: "user",
+            parts: [{ text: `Create exactly ${count} unique words about ${ALLOWED_TOPICS[topic]}.` }],
+          }],
+          generationConfig: {
+            responseMimeType: "application/json",
+            responseSchema: wordSchema,
+            temperature: 0.9,
+            maxOutputTokens: 2048,
+          },
+        }),
+        cache: "no-store",
+      },
+    );
 
     const data = await apiResponse.json();
     if (!apiResponse.ok) {
@@ -107,7 +116,7 @@ export async function POST(request) {
       return json({ error: "The generated word set was invalid. Please try again." }, 502);
     }
 
-    return json({ words, source: "ai" });
+    return json({ words, source: "gemini" });
   } catch {
     return json({ error: "Could not reach the word generation service." }, 500);
   }

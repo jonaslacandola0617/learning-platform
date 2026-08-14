@@ -1,12 +1,14 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import { puzzles as starterPuzzles } from "./puzzles";
-import { getBuiltInWords, WORD_TOPICS } from "./topicWords";
+import { getBuiltInDictionary, getBuiltInWords, WORD_TOPICS } from "./topicWords";
 
 const EXTRA_LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
 const IMAGE_PROMPT_VERSION = "2";
+const WORD_CACHE_KEY = "tuklas.generated-word-cache.v1";
+const MAX_CACHED_WORDS_PER_TOPIC = 105;
 
 function shuffle(items) {
   const copy = [...items];
@@ -19,6 +21,65 @@ function shuffle(items) {
 
 function normalizeWord(value) {
   return value.toLocaleUpperCase("en-US").replace(/[^A-Z]/g, "").slice(0, 14);
+}
+
+function decorateEntry(entry, topic) {
+  const selectedTopic = WORD_TOPICS.find((item) => item.id === topic);
+  const answer = normalizeWord(entry.answer);
+  return {
+    ...entry,
+    answer,
+    topic,
+    emojiLabel: `${answer.toLocaleLowerCase("en-US")} illustration`,
+    description: `Which word from ${selectedTopic?.label || "this topic"} matches this clue?`,
+  };
+}
+
+function uniqueWords(entries) {
+  const seen = new Set();
+  return entries.filter((entry) => {
+    const answer = normalizeWord(entry.answer);
+    if (!answer || seen.has(answer)) return false;
+    seen.add(answer);
+    return true;
+  });
+}
+
+function parseGeneratedCache(serializedCache) {
+  try {
+    const parsed = JSON.parse(serializedCache || "{}");
+    return Object.fromEntries(WORD_TOPICS.map(({ id }) => {
+      const entries = Array.isArray(parsed[id]) ? parsed[id] : [];
+      return [id, uniqueWords(entries.map((entry) => decorateEntry({
+        answer: entry?.answer,
+        hint: String(entry?.hint || "").slice(0, 100),
+        emoji: String(entry?.emoji || "✨").slice(0, 8),
+      }, id))).filter((entry) => entry.answer && entry.hint).slice(-MAX_CACHED_WORDS_PER_TOPIC)];
+    }));
+  } catch {
+    return {};
+  }
+}
+
+function subscribeToWordCache(onStoreChange) {
+  window.addEventListener("storage", onStoreChange);
+  window.addEventListener("tuklas-word-cache", onStoreChange);
+  return () => {
+    window.removeEventListener("storage", onStoreChange);
+    window.removeEventListener("tuklas-word-cache", onStoreChange);
+  };
+}
+
+function getWordCacheSnapshot() {
+  try {
+    return window.localStorage.getItem(WORD_CACHE_KEY) || "{}";
+  } catch {
+    return "{}";
+  }
+}
+
+function getServerWordCacheSnapshot() {
+  return "{}";
 }
 
 function preparePuzzle(entry, index) {
@@ -126,33 +187,73 @@ function GameSetup({ onBack, onStart }) {
   const [isGenerating, setIsGenerating] = useState(false);
   const [generationNote, setGenerationNote] = useState("Your first word set is ready. You can edit every word and clue.");
   const generationRequest = useRef(0);
+  const serializedCache = useSyncExternalStore(
+    subscribeToWordCache,
+    getWordCacheSnapshot,
+    getServerWordCacheSnapshot,
+  );
+  const generatedCache = useMemo(() => parseGeneratedCache(serializedCache), [serializedCache]);
 
-  async function generateWords(nextTopic, count, randomizeFallback = true) {
+  function saveGeneratedCache(nextCache) {
+    try {
+      window.localStorage.setItem(WORD_CACHE_KEY, JSON.stringify(nextCache));
+      window.dispatchEvent(new Event("tuklas-word-cache"));
+      return true;
+    } catch {
+      return false;
+    }
+  }
+
+  function shuffleLibrary(nextTopic = topic, count = roundCount, cache = generatedCache) {
+    generationRequest.current += 1;
+    const generatedWords = cache[nextTopic] || [];
+    const pool = uniqueWords([...getBuiltInDictionary(nextTopic), ...generatedWords]);
+    const nextEntries = shuffle(pool).slice(0, count).map((entry) => decorateEntry(entry, nextTopic));
+    setEntries(nextEntries);
+    setError("");
+    setGenerationNote(generatedWords.length
+      ? `Shuffled ${pool.length} saved and built-in words. No AI tokens used.`
+      : `Shuffled the ${pool.length}-word built-in dictionary. No AI tokens used.`);
+  }
+
+  async function generateWords() {
     const requestId = generationRequest.current + 1;
     generationRequest.current = requestId;
     setIsGenerating(true);
     setError("");
-    setGenerationNote(`Creating ${count} ${WORD_TOPICS.find((item) => item.id === nextTopic)?.label.toLocaleLowerCase("en-US")}…`);
+    setGenerationNote(`Creating ${roundCount} completely new ${WORD_TOPICS.find((item) => item.id === topic)?.label.toLocaleLowerCase("en-US")}…`);
+
+    const dictionaryAnswers = getBuiltInDictionary(topic).map((item) => normalizeWord(item.answer));
+    const cachedAnswers = (generatedCache[topic] || []).map((item) => normalizeWord(item.answer));
+    const visibleAnswers = entries.map((item) => normalizeWord(item.answer));
+    const excludedWords = [...new Set([
+      ...dictionaryAnswers,
+      ...cachedAnswers,
+      ...visibleAnswers,
+    ].filter(Boolean))].slice(-240);
 
     try {
       const response = await fetch("/api/generate-words", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ topic: nextTopic, count }),
+        body: JSON.stringify({ topic, count: roundCount, excludedWords }),
       });
       const data = await response.json();
       if (!response.ok) throw new Error(data.error || "AI generation is unavailable.");
       if (generationRequest.current !== requestId) return;
-      setEntries(data.words.map((item) => ({
-        ...item,
-        emojiLabel: `${item.answer.toLocaleLowerCase("en-US")} illustration`,
-        description: `Which word from ${WORD_TOPICS.find((topicItem) => topicItem.id === nextTopic)?.label || "this topic"} matches this clue?`,
-      })));
-      setGenerationNote(`Fresh Gemini word set ready—edit anything you want.`);
-    } catch {
+      const newWords = data.words.map((item) => decorateEntry(item, topic));
+      const nextTopicCache = uniqueWords([...(generatedCache[topic] || []), ...newWords])
+        .slice(-MAX_CACHED_WORDS_PER_TOPIC);
+      const nextCache = { ...generatedCache, [topic]: nextTopicCache };
+      const cacheSaved = saveGeneratedCache(nextCache);
+      setEntries(newWords);
+      setGenerationNote(cacheSaved
+        ? `${newWords.length} new Gemini words saved. Future shuffles can reuse them for free.`
+        : "New words are ready, but this browser could not save them for later shuffles.");
+    } catch (generationError) {
       if (generationRequest.current !== requestId) return;
-      setEntries(getBuiltInWords(nextTopic, count, randomizeFallback));
-      setGenerationNote("Built-in word set ready. Add a Gemini API key later for fresh AI-generated sets.");
+      setError(generationError instanceof Error ? generationError.message : "Could not generate a new word set.");
+      setGenerationNote("Your current words were kept. No failed output was added to the cache.");
     } finally {
       if (generationRequest.current === requestId) setIsGenerating(false);
     }
@@ -160,12 +261,12 @@ function GameSetup({ onBack, onStart }) {
 
   function changeCount(count) {
     setRoundCount(count);
-    generateWords(topic, count);
+    shuffleLibrary(topic, count);
   }
 
   function changeTopic(nextTopic) {
     setTopic(nextTopic);
-    generateWords(nextTopic, roundCount);
+    shuffleLibrary(nextTopic, roundCount);
   }
 
   function updateEntry(index, field, value) {
@@ -203,21 +304,21 @@ function GameSetup({ onBack, onStart }) {
     <div className="platform-page setup-page">
       <nav className="platform-nav"><button className="back-link" onClick={onBack}>← Back</button><Brand compact /><span className="nav-step">Game setup</span></nav>
       <main className="setup-shell">
-        <header className="setup-intro"><span className="eyebrow">GUESS THE WORD</span><h1>Create your word game</h1><p>Choose a topic and number of rounds. We will prepare the words immediately, and you can edit everything before playing.</p></header>
+        <header className="setup-intro"><span className="eyebrow">GUESS THE WORD</span><h1>Create your word game</h1><p>Shuffle saved words for free, or use Generate only when you want to expand your word library.</p></header>
 
         <form onSubmit={submit}>
           <section className="setup-section">
-            <div className="setup-section-title"><span>1</span><div><h2>Choose a topic</h2><p>The game will generate simple English words from this category.</p></div></div>
+            <div className="setup-section-title"><span>1</span><div><h2>Choose a topic</h2><p>The game instantly shuffles simple English words from this category.</p></div></div>
             <div className="topic-options">{WORD_TOPICS.map((item) => <button type="button" key={item.id} className={topic === item.id ? "selected" : ""} onClick={() => changeTopic(item.id)} disabled={isGenerating}><span>{item.icon}</span><strong>{item.label}</strong><small>{item.description}</small></button>)}</div>
           </section>
 
           <section className="setup-section">
-            <div className="setup-section-title"><span>2</span><div><h2>How many words?</h2><p>Clicking a number creates a new set immediately.</p></div></div>
+            <div className="setup-section-title"><span>2</span><div><h2>How many words?</h2><p>Changing the number reshuffles your saved library without using AI.</p></div></div>
             <div className="count-options">{[5, 10, 15].map((count) => <button type="button" key={count} className={roundCount === count ? "selected" : ""} onClick={() => changeCount(count)} disabled={isGenerating}><strong>{count}</strong><small>words</small></button>)}</div>
           </section>
 
           <section className="setup-section">
-            <div className="setup-section-title"><span>3</span><div><h2>Review your words</h2><p>Every generated word and clue is editable.</p></div><button type="button" className="sample-button" onClick={() => generateWords(topic, roundCount)} disabled={isGenerating}>{isGenerating ? "Generating…" : "Generate a new set"}</button></div>
+            <div className="setup-section-title"><span>3</span><div><h2>Review your words</h2><p>Shuffle is free. Generate calls Gemini and saves only brand-new words.</p></div><div className="word-source-actions"><button type="button" className="sample-button shuffle-button" onClick={() => shuffleLibrary()} disabled={isGenerating}>↻ {(generatedCache[topic] || []).length ? "Shuffle cache + dictionary" : "Shuffle dictionary"}</button><button type="button" className="sample-button generate-button" onClick={generateWords} disabled={isGenerating}>{isGenerating ? "Generating…" : "✦ Generate new words"}</button></div></div>
             <div className={`generation-note ${isGenerating ? "loading" : ""}`} role="status"><span>{isGenerating ? "✦" : "✓"}</span>{generationNote}</div>
             <div className="word-entry-grid">{entries.map((entry, index) => <div className="word-entry" key={index}><span className="entry-number">{index + 1}</span><label><small>WORD</small><input id={`word-${index}`} value={entry.answer} onChange={(event) => updateEntry(index, "answer", event.target.value)} placeholder="EXAMPLE: ELEPHANT" disabled={isGenerating} /></label><label className="clue-field"><small>CLUE (OPTIONAL)</small><input value={entry.hint} onChange={(event) => updateEntry(index, "hint", event.target.value)} placeholder="Write a short clue" disabled={isGenerating} /></label></div>)}</div>
           </section>

@@ -147,11 +147,11 @@ function GameSetup({ onBack, onStart }) {
         emojiLabel: `${item.answer.toLocaleLowerCase("en-US")} illustration`,
         description: `Which word from ${WORD_TOPICS.find((topicItem) => topicItem.id === nextTopic)?.label || "this topic"} matches this clue?`,
       })));
-      setGenerationNote(`Fresh AI word set ready—edit anything you want.`);
+      setGenerationNote(`Fresh Gemini word set ready—edit anything you want.`);
     } catch {
       if (generationRequest.current !== requestId) return;
       setEntries(getBuiltInWords(nextTopic, count, randomizeFallback));
-      setGenerationNote("Built-in word set ready. Add an OpenAI API key later for fresh AI-generated sets.");
+      setGenerationNote("Built-in word set ready. Add a Gemini API key later for fresh AI-generated sets.");
     } finally {
       if (generationRequest.current === requestId) setIsGenerating(false);
     }
@@ -225,7 +225,7 @@ function GameSetup({ onBack, onStart }) {
             <div className="setup-section-title"><span>4</span><div><h2>Choose the pictures</h2><p>Select how the visual clue should appear.</p></div></div>
             <div className="image-options">
               <label className={imageMode === "included" ? "selected" : ""}><input type="radio" name="imageMode" checked={imageMode === "included"} onChange={() => setImageMode("included")} /><span className="option-icon">🎨</span><span><strong>Instant visual cards</strong><small>Fast and free. Uses the included art or a playful emoji card.</small></span><b>Recommended</b></label>
-              <label className={imageMode === "ai" ? "selected" : ""}><input type="radio" name="imageMode" checked={imageMode === "ai"} onChange={() => setImageMode("ai")} /><span className="option-icon">✨</span><span><strong>AI-generated images</strong><small>Created during the game. Requires an OpenAI API key and paid API credits.</small></span></label>
+              <label className={imageMode === "ai" ? "selected" : ""}><input type="radio" name="imageMode" checked={imageMode === "ai"} onChange={() => setImageMode("ai")} /><span className="option-icon">✨</span><span><strong>AI-generated images</strong><small>Created with Cloudflare Workers AI and reused from the cache when available.</small></span></label>
             </div>
           </section>
 
@@ -282,7 +282,8 @@ function Game({ gamePuzzles, imageMode, onExit }) {
       requestedImages.current.add(candidate.id);
       setLoadingImages((current) => ({ ...current, [candidate.id]: true }));
       try {
-        const response = await fetch("/api/generate-image", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ word: candidate.answer, clue: candidate.hint, topic: candidate.topic }) });
+        const imageParams = new URLSearchParams({ word: candidate.answer, clue: candidate.hint, topic: candidate.topic });
+        const response = await fetch(`/api/generate-image?${imageParams}`);
         const data = await response.json();
         if (!response.ok) throw new Error(data.error || "The image could not be generated.");
         setGeneratedImages((current) => ({ ...current, [candidate.id]: data.image }));

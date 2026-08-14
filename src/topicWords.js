@@ -105,7 +105,7 @@ export function getBuiltInWords(topicId, count, randomize = false) {
     hint,
     emoji,
     emojiLabel: `${answer.toLocaleLowerCase("en-US")} illustration`,
-    description: `Which ${WORD_TOPICS.find((topic) => topic.id === topicId)?.label.toLocaleLowerCase("en-US") || "word"} matches this clue?`,
+    description: `Which word from ${WORD_TOPICS.find((topic) => topic.id === topicId)?.label || "this topic"} matches this clue?`,
     topic: topicId,
   }));
 }

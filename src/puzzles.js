@@ -1,11 +1,5 @@
-// Detect if running inside Electron (set by preload.cjs)
-// If yes, use appimg:// so Electron loads from the folder NEXT TO the .exe
-// If no (plain HTML), use ./images/ relative path
 function img(name) {
-  if (typeof window !== 'undefined' && window.isElectron) {
-    return `appimg:///${name}.png`
-  }
-  return `./images/${name}.png`
+  return `/images/${name}.png`
 }
 
 export const puzzles = [

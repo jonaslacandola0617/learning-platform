@@ -14,7 +14,7 @@ const LETTER_CARDS = [
   ["Y", "Yo-yo", "🪀"], ["Z", "Zebra", "🦓"],
 ].map(([letter, word, emoji]) => ({ letter, word, emoji }));
 
-const FLIP_CACHE_KEY = "tuklas.flip-word-cache.v1";
+const FLIP_CACHE_KEY = "tuklas.flip-word-cache.v2";
 const flipVisualCache = new Map();
 const LEGACY_INEXACT_EMOJIS = new Set(["⚡", "🪵"]);
 
@@ -69,7 +69,7 @@ function needsGeneratedVisual(card) {
 
 function FlipCardVisual({ card }) {
   const shouldGenerate = needsGeneratedVisual(card);
-  const cacheKey = `${card.topic}:${card.answer}:${card.hint}`;
+  const cacheKey = `v2:${card.topic}:${card.answer}:${card.hint}`;
   const [image, setImage] = useState(() => flipVisualCache.get(cacheKey) || "");
 
   useEffect(() => {
@@ -81,7 +81,7 @@ function FlipCardVisual({ card }) {
       clue: card.hint,
       topic: card.topic || "mixed",
       variant: "flipcard-icon",
-      v: "1",
+      v: "2",
     });
     fetch(`/api/generate-image?${params}`)
       .then((response) => response.ok ? response.json() : Promise.reject())

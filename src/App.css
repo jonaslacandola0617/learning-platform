@@ -56,6 +56,11 @@ button { cursor:pointer; }
 .sequence-visual i { font-style:normal; color:#c7900e; }
 .match-visual { background:#e7f8ed; font-size:52px; }
 .match-visual i { font-style:normal; color:var(--green); font-size:28px; }
+.tracing-visual { position:relative; color:var(--blue); background:linear-gradient(140deg,#fff2b8,#fff9df); }
+.tracing-visual svg { width:88%; height:82%; overflow:visible; }
+.tracing-visual path { fill:none; stroke:currentColor; stroke-width:13; stroke-linecap:round; stroke-dasharray:2 16; }
+.tracing-visual circle { fill:var(--green); }
+.tracing-pencil { position:absolute; right:28px; top:25px; color:var(--red); font-size:48px; transform:rotate(-24deg); filter:drop-shadow(0 5px 4px rgba(20,50,90,.13)); }
 .game-card-body { padding:22px 23px 24px; }
 .card-tags { display:flex; gap:7px; margin-bottom:11px; }
 .card-tags span,.soon-label { padding:5px 9px; border-radius:20px; background:var(--sky); color:var(--blue); font-size:10px; font-weight:900; letter-spacing:.5px; text-transform:uppercase; }
@@ -172,6 +177,56 @@ button { cursor:pointer; }
 .result-score span { color:var(--muted); font-size:11px; font-weight:900; text-transform:uppercase; }
 .modal-actions { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
 .confetti-piece { position:fixed; top:-15px; width:9px; height:13px; z-index:200; animation:confetti 2.5s ease-in forwards; }
+
+/* Tracing game */
+.tracing-setup-shell { width:min(980px,calc(100% - 32px)); }
+.trace-category-options { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; }
+.trace-category-options button { min-height:135px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; border:2px solid var(--line); border-radius:18px; color:var(--navy); background:#fbfdff; transition:.18s ease; }
+.trace-category-options button > span { color:var(--blue); font:800 38px 'Baloo 2'; line-height:1; }
+.trace-category-options button strong { font:800 18px 'Baloo 2'; }
+.trace-category-options button small { color:var(--muted); }
+.trace-category-options button:hover,.trace-pattern-grid button:hover,.trace-character-grid button:hover { transform:translateY(-2px); border-color:#9fc5f3; }
+.trace-category-options button.selected,.trace-pattern-grid button.selected,.trace-character-grid button.selected { border-color:var(--blue); background:var(--sky); box-shadow:inset 0 0 0 2px white; }
+.trace-case-toggle { width:max-content; display:flex; gap:4px; margin:0 0 17px; padding:4px; border-radius:12px; background:#eef4fb; }
+.trace-case-toggle button { border:0; border-radius:9px; padding:9px 16px; color:var(--muted); background:transparent; font-weight:900; }
+.trace-case-toggle button.selected { color:white; background:var(--blue); box-shadow:0 4px 10px rgba(21,89,183,.2); }
+.trace-pattern-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+.trace-pattern-grid button { min-height:145px; display:grid; grid-template-columns:150px 1fr; align-items:center; gap:15px; padding:13px 16px; border:2px solid var(--line); border-radius:17px; color:var(--blue); background:#fbfdff; text-align:left; transition:.18s ease; }
+.trace-pattern-grid svg { width:100%; }
+.trace-pattern-grid button > span { display:flex; flex-direction:column; gap:4px; }
+.trace-pattern-grid strong { color:var(--navy); font:800 17px 'Baloo 2'; }
+.trace-pattern-grid small { color:var(--muted); line-height:1.4; }
+.trace-character-grid { display:grid; grid-template-columns:repeat(9,1fr); gap:9px; }
+.trace-character-grid button { aspect-ratio:1; border:2px solid var(--line); border-radius:13px; color:var(--navy); background:#fbfdff; font:800 clamp(20px,3vw,30px) 'Baloo 2'; transition:.16s ease; }
+.tracing-game-shell { width:min(1060px,calc(100% - 32px)); margin:35px auto 70px; }
+.tracing-game-heading { display:flex; align-items:center; justify-content:space-between; gap:28px; margin-bottom:20px; }
+.tracing-game-heading h1 { margin:0; font:800 clamp(34px,5vw,53px)/1 'Baloo 2'; }
+.tracing-game-heading p { max-width:650px; margin:9px 0 0; color:var(--muted); line-height:1.5; }
+.trace-progress-orb { width:112px; height:112px; flex:0 0 auto; display:flex; flex-direction:column; align-items:center; justify-content:center; border:8px solid #dce9f8; border-radius:50%; color:var(--blue); background:white; box-shadow:0 8px 25px rgba(21,69,126,.1); }
+.trace-progress-orb strong { font:800 25px/1 'Baloo 2'; }
+.trace-progress-orb span { margin-top:4px; color:var(--muted); font-size:9px; font-weight:900; text-transform:uppercase; }
+.trace-progress-orb.ready { color:white; border-color:#a8e6bc; background:var(--green); animation:pop .35s ease; }
+.trace-progress-orb.ready span { color:white; }
+.tracing-board-wrap { overflow:hidden; border:1px solid var(--line); border-radius:28px; background:white; box-shadow:var(--shadow); }
+.tracing-board { width:100%; display:block; aspect-ratio:5/3; max-height:620px; cursor:crosshair; touch-action:none; user-select:none; }
+.trace-guide-path { fill:none; stroke:#b8cce5; stroke-width:28; stroke-linecap:round; stroke-linejoin:round; stroke-dasharray:4 20; }
+.trace-guide-character { fill:rgba(213,227,244,.35); stroke:#b8cce5; stroke-width:5; stroke-dasharray:7 12; paint-order:stroke; text-anchor:middle; font:800 250px 'Baloo 2'; }
+.trace-start-dot { fill:var(--green); stroke:white; stroke-width:5; }
+.trace-start-label { fill:var(--green); font:900 16px 'Nunito'; letter-spacing:1.5px; }
+.tracing-board-tools { display:flex; justify-content:flex-end; gap:8px; padding:12px 16px; border-top:1px solid var(--line); background:#f8fbff; }
+.tracing-board-tools button { border:1px solid var(--line); border-radius:10px; padding:8px 13px; color:var(--blue); background:white; font-size:11px; font-weight:900; }
+.tracing-board-tools button:disabled { opacity:.4; cursor:default; }
+.tracing-controls { display:flex; align-items:center; justify-content:space-between; gap:20px; margin-top:17px; padding:16px 18px; border:1px solid var(--line); border-radius:20px; background:white; box-shadow:0 7px 24px rgba(20,65,123,.07); }
+.trace-colors { display:flex; align-items:center; gap:13px; }
+.trace-colors > span { color:var(--muted); font-size:11px; font-weight:900; text-transform:uppercase; }
+.trace-colors > div { display:flex; gap:7px; }
+.trace-colors button { width:31px; height:31px; padding:0; border:4px solid white; border-radius:50%; background:var(--pencil-color); box-shadow:0 0 0 1px var(--line); }
+.trace-colors button.selected { box-shadow:0 0 0 3px var(--navy); transform:scale(.88); }
+.trace-navigation { display:flex; align-items:center; gap:11px; }
+.trace-navigation > span { color:var(--muted); font-size:11px; font-weight:900; white-space:nowrap; }
+.trace-navigation button:disabled { opacity:.42; cursor:default; transform:none; box-shadow:none; }
+.trace-finish-button { min-width:155px; }
+.trace-tip { margin:10px 0 0; color:var(--muted); font-size:11px; text-align:right; }
 @keyframes bob { 50% { transform:translateY(-10px) rotate(2deg); } }
 @keyframes pulse { 50% { transform:scale(1.1) rotate(8deg); } }
 @keyframes wrong { 20%,60% { transform:translateX(-5px); } 40%,80% { transform:translateX(5px); } }
@@ -188,6 +243,10 @@ button { cursor:pointer; }
   .topic-options { grid-template-columns:repeat(3,1fr); }
   .desktop-nav { display:none; }
   .mobile-nav { display:flex; }
+  .trace-pattern-grid { grid-template-columns:1fr; }
+  .trace-character-grid { grid-template-columns:repeat(7,1fr); }
+  .tracing-controls { align-items:stretch; flex-direction:column; }
+  .trace-navigation { justify-content:space-between; }
 }
 @media (max-width:600px) {
   .platform-nav,.game-header { padding:0 16px; }
@@ -217,5 +276,23 @@ button { cursor:pointer; }
   .right-section { padding:16px 12px; }
   .slots-row { gap:3px; }
   .slot { border-radius:7px; }
+  .trace-category-options { grid-template-columns:1fr; }
+  .trace-category-options button { min-height:100px; }
+  .trace-pattern-grid button { grid-template-columns:110px 1fr; min-height:120px; padding:10px; }
+  .trace-character-grid { grid-template-columns:repeat(5,1fr); }
+  .tracing-game-shell { width:min(100% - 20px,1060px); margin-top:20px; }
+  .tracing-game-heading { align-items:flex-start; }
+  .tracing-game-heading p { font-size:13px; }
+  .trace-progress-orb { width:82px; height:82px; border-width:6px; }
+  .trace-progress-orb strong { font-size:20px; }
+  .trace-progress-orb span { display:none; }
+  .tracing-board-wrap { border-radius:19px; }
+  .tracing-board { min-height:300px; }
+  .tracing-controls { padding:13px; }
+  .trace-colors { justify-content:space-between; }
+  .trace-navigation { display:grid; grid-template-columns:1fr 1fr; }
+  .trace-navigation > span { grid-column:1 / -1; grid-row:1; text-align:center; }
+  .trace-navigation button { width:100%; padding-inline:10px; }
+  .trace-tip { text-align:center; }
 }
 @media (prefers-reduced-motion:reduce) { *,*::before,*::after { animation-duration:.01ms!important; animation-iteration-count:1!important; scroll-behavior:auto!important; transition-duration:.01ms!important; } }

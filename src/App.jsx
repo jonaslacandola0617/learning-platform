@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import { puzzles as starterPuzzles } from "./puzzles";
 import { getBuiltInDictionary, getBuiltInWords, WORD_TOPICS } from "./topicWords";
+import { TracingGame, TracingSetup } from "./TracingGame";
 
 const EXTRA_LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
 const IMAGE_PROMPT_VERSION = "2";
@@ -124,7 +125,7 @@ function Brand({ compact = false }) {
   );
 }
 
-function Dashboard({ onSelectGame }) {
+function Dashboard({ onSelectWordGame, onSelectTracing }) {
   return (
     <div className="platform-page">
       <nav className="platform-nav">
@@ -138,7 +139,7 @@ function Dashboard({ onSelectGame }) {
             <span className="eyebrow">YOUR LEARNING SPACE</span>
             <h1>Learn through every <em>game.</em></h1>
             <p>Choose an activity, test what you know, and make every lesson more enjoyable.</p>
-            <button className="primary-button" onClick={onSelectGame}>Play the first game <span>→</span></button>
+            <button className="primary-button" onClick={onSelectTracing}>Try tracing <span>→</span></button>
           </div>
           <div className="welcome-art" aria-hidden="true">
             <div className="sun-orbit"><span>★</span></div>
@@ -150,9 +151,9 @@ function Dashboard({ onSelectGame }) {
         </section>
 
         <section className="games-section">
-          <div className="section-heading"><div><span className="eyebrow">GAMES</span><h2>What would you like to play?</h2></div><span className="game-count">1 game available</span></div>
+          <div className="section-heading"><div><span className="eyebrow">GAMES</span><h2>What would you like to play?</h2></div><span className="game-count">2 games available</span></div>
           <div className="game-grid">
-            <article className="game-card featured-game" onClick={onSelectGame}>
+            <article className="game-card featured-game" onClick={onSelectWordGame}>
               <div className="game-visual word-visual"><span className="letter-tile">M</span><span className="letter-tile">A</span><span className="letter-tile">B</span><span className="letter-tile">A</span><span className="letter-tile">I</span></div>
               <div className="game-card-body">
                 <div className="card-tags"><span>Vocabulary</span><span>Words</span></div>
@@ -162,9 +163,9 @@ function Dashboard({ onSelectGame }) {
               </div>
             </article>
 
-            <article className="game-card coming-card">
-              <div className="game-visual sequence-visual"><span>1</span><i>→</i><span>2</span><i>→</i><span>3</span></div>
-              <div className="game-card-body"><div className="card-tags"><span>Logic</span></div><h3>Story Sequence</h3><p>Arrange events in the correct order.</p><span className="soon-label">Coming soon</span></div>
+            <article className="game-card featured-game tracing-game-card" onClick={onSelectTracing}>
+              <div className="game-visual tracing-visual"><svg viewBox="0 0 320 150" aria-hidden="true"><path d="M20 98 C70 24 116 24 160 98 S250 172 300 74" /><circle cx="20" cy="98" r="8" /></svg><span className="tracing-pencil">✎</span></div>
+              <div className="game-card-body"><div className="card-tags"><span>Writing</span><span>Motor skills</span></div><h3>Tracing Practice</h3><p>Trace patterns, alphabet letters, and numbers with your finger or mouse.</p><button className="card-play">Play now <span>→</span></button></div>
             </article>
 
             <article className="game-card coming-card">
@@ -467,10 +468,13 @@ export default function App() {
   const [screen, setScreen] = useState("dashboard");
   const [gamePuzzles, setGamePuzzles] = useState(() => starterPuzzles.map(preparePuzzle));
   const [imageMode, setImageMode] = useState("included");
+  const [traceSession, setTraceSession] = useState(null);
   const app = useMemo(() => {
     if (screen === "setup") return <GameSetup onBack={() => setScreen("dashboard")} onStart={(nextPuzzles, mode) => { setGamePuzzles(nextPuzzles); setImageMode(mode); setScreen("game"); }} />;
     if (screen === "game") return <Game gamePuzzles={gamePuzzles} imageMode={imageMode} onExit={() => setScreen("dashboard")} />;
-    return <Dashboard onSelectGame={() => setScreen("setup")} />;
-  }, [screen, gamePuzzles, imageMode]);
+    if (screen === "tracing-setup") return <TracingSetup brand={<Brand compact />} onBack={() => setScreen("dashboard")} onStart={(items, startIndex) => { setTraceSession({ items, startIndex }); setScreen("tracing-game"); }} />;
+    if (screen === "tracing-game" && traceSession) return <TracingGame brand={<Brand compact />} items={traceSession.items} startIndex={traceSession.startIndex} onExit={() => setScreen("dashboard")} />;
+    return <Dashboard onSelectWordGame={() => setScreen("setup")} onSelectTracing={() => setScreen("tracing-setup")} />;
+  }, [screen, gamePuzzles, imageMode, traceSession]);
   return app;
 }

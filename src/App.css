@@ -211,7 +211,7 @@ button { cursor:pointer; }
 .tracing-workspace { display:grid; grid-template-columns:minmax(0,1fr) 190px; align-items:start; gap:18px; }
 .tracing-board { width:100%; display:block; aspect-ratio:5/3; max-height:620px; cursor:crosshair; touch-action:none; user-select:none; }
 .trace-guide-path { fill:none; stroke:#b8cce5; stroke-width:28; stroke-linecap:round; stroke-linejoin:round; stroke-dasharray:4 20; }
-.trace-guide-character { fill:rgba(213,227,244,.35); stroke:#b8cce5; stroke-width:5; stroke-dasharray:7 12; paint-order:stroke; text-anchor:middle; font:800 250px 'Baloo 2'; }
+.trace-guide-character { fill:rgba(213,227,244,.35); stroke:#b8cce5; stroke-width:5; stroke-dasharray:7 12; paint-order:stroke; text-anchor:middle; font:800 285px 'Baloo 2'; }
 .trace-start-dot { fill:var(--green); stroke:white; stroke-width:5; }
 .trace-start-label { fill:var(--green); font:900 16px 'Nunito'; letter-spacing:1.5px; }
 .tracing-board-tools { display:flex; justify-content:flex-end; gap:8px; padding:12px 16px; border-top:1px solid var(--line); background:#f8fbff; }

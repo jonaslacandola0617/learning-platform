@@ -67,9 +67,8 @@ export async function POST(request) {
             answer: { type: "STRING" },
             hint: { type: "STRING" },
             emoji: { type: "STRING" },
-            emojiIsExact: { type: "BOOLEAN" },
           },
-          required: ["answer", "hint", "emoji", "emojiIsExact"],
+          required: ["answer", "hint", "emoji"],
         },
       },
     },
@@ -93,7 +92,7 @@ export async function POST(request) {
           body: JSON.stringify({
             systemInstruction: {
               parts: [{
-                text: "Create safe vocabulary for an elementary learning game. Use common, simple English only. Never use spaces, punctuation, proper names, obscure words, or repeated answers. Keep every answer between 2 and 14 letters. Make each clue one short, child-friendly English sentence. Return one relevant emoji per word. Set emojiIsExact to true only when the emoji literally and unmistakably depicts the answer itself. Set it to false for metaphors, symbols, raw materials, related objects, or approximate substitutes; examples: TABLE with a log is false and QUICK with a lightning bolt is false. The forbidden-word list is absolute: never return, reorder, rephrase, or reuse an answer from it.",
+                text: "Create safe vocabulary for an elementary learning game. Use common, simple English only. Never use spaces, punctuation, proper names, obscure words, or repeated answers. Keep every answer between 2 and 14 letters. Make each clue one short, child-friendly English sentence. Return one relevant emoji per word. The forbidden-word list is absolute: never return, reorder, rephrase, or reuse an answer from it.",
               }],
             },
             contents: [{
@@ -125,7 +124,6 @@ export async function POST(request) {
         hint: String(item.hint || "").trim().slice(0, 100),
         emoji: String(item.emoji || "✨").trim().slice(0, 8),
         topic,
-        useGeneratedVisual: item.emojiIsExact !== true,
       }));
 
       const uniqueAnswers = new Set(words?.map((item) => item.answer));

@@ -6,6 +6,7 @@ import { puzzles as starterPuzzles } from "./puzzles";
 import { getBuiltInWords, WORD_TOPICS } from "./topicWords";
 
 const EXTRA_LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
+const IMAGE_PROMPT_VERSION = "2";
 
 function shuffle(items) {
   const copy = [...items];
@@ -282,7 +283,7 @@ function Game({ gamePuzzles, imageMode, onExit }) {
       requestedImages.current.add(candidate.id);
       setLoadingImages((current) => ({ ...current, [candidate.id]: true }));
       try {
-        const imageParams = new URLSearchParams({ word: candidate.answer, clue: candidate.hint, topic: candidate.topic });
+        const imageParams = new URLSearchParams({ word: candidate.answer, clue: candidate.hint, topic: candidate.topic, v: IMAGE_PROMPT_VERSION });
         const response = await fetch(`/api/generate-image?${imageParams}`);
         const data = await response.json();
         if (!response.ok) throw new Error(data.error || "The image could not be generated.");

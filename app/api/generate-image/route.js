@@ -36,7 +36,19 @@ export async function GET(request) {
     return json({ error: "Invalid Cloudflare image model configuration." }, 500);
   }
 
-  const prompt = `A warm, polished children's educational illustration for an elementary vocabulary game. Show one clear, child-friendly scene that visually represents the ${topic} word "${word}". ${clue ? `Context: ${clue}.` : ""} Cheerful but calm storybook style, rich blue, yellow, and green palette, soft natural lighting, clean composition, landscape framing, no written words, no letters, no logo, no watermark.`;
+  const concept = word.toLocaleLowerCase("en-US");
+  const sceneDirection = ["animals", "objects"].includes(topic)
+    ? "Show one central, full-body subject with only a few simple environmental details."
+    : "Show one simple action scene with no more than two friendly characters and only essential props.";
+  const prompt = [
+    "Create a wordless educational picture for a children's learning game. IMAGE ONLY.",
+    `Clearly depict ${concept} as the main visual concept.`,
+    clue ? `Communicate this meaning visually: ${clue}` : "Make the concept immediately recognizable without explanation.",
+    sceneDirection,
+    "Use the same Tuklas house style every time: polished 3D storybook illustration, soft rounded forms, clean edges, subtle matte textures, gentle depth, friendly proportions, and soft diffused daylight.",
+    "Use a balanced royal-blue, sunny-yellow, leaf-green, coral, and warm-cream palette. Keep the background simple, bright, spacious, and uncluttered. Landscape composition, eye-level view, subject centered with comfortable margins.",
+    "STRICTLY WORDLESS: do not include text, typography, words, letters, numbers, labels, captions, signs, speech bubbles, book covers, posters, logos, watermarks, borders, interface elements, or written symbols. Do not spell or display the concept anywhere in the image.",
+  ].join(" ");
 
   try {
     const apiResponse = await fetch(

@@ -27,8 +27,12 @@ export async function GET(request) {
   const word = String(searchParams.get("word") || "").toLocaleUpperCase("en-US").trim();
   const clue = String(searchParams.get("clue") || "").trim().slice(0, 120);
   const topic = String(searchParams.get("topic") || "general vocabulary").trim().slice(0, 40);
+  const variant = String(searchParams.get("variant") || "storybook");
   if (!ALLOWED_WORD.test(word)) {
     return json({ error: "Invalid word." }, 400);
+  }
+  if (!new Set(["storybook", "flipcard-icon"]).has(variant)) {
+    return json({ error: "Invalid image variant." }, 400);
   }
 
   const model = process.env.CLOUDFLARE_IMAGE_MODEL || DEFAULT_MODEL;
@@ -37,18 +41,36 @@ export async function GET(request) {
   }
 
   const concept = word.toLocaleLowerCase("en-US");
-  const sceneDirection = ["animals", "objects"].includes(topic)
+  const storybookDirection = ["animals", "objects"].includes(topic)
     ? "Show one central, full-body subject with only a few simple environmental details."
     : "Show one simple action scene with no more than two friendly characters and only essential props.";
-  const prompt = [
-    "Create a wordless educational picture for a children's learning game. IMAGE ONLY.",
-    `Clearly depict ${concept} as the main visual concept.`,
-    clue ? `Communicate this meaning visually: ${clue}` : "Make the concept immediately recognizable without explanation.",
-    sceneDirection,
-    "Use the same Tuklas house style every time: polished 3D storybook illustration, soft rounded forms, clean edges, subtle matte textures, gentle depth, friendly proportions, and soft diffused daylight.",
-    "Use a balanced royal-blue, sunny-yellow, leaf-green, coral, and warm-cream palette. Keep the background simple, bright, spacious, and uncluttered. Landscape composition, eye-level view, subject centered with comfortable margins.",
-    "STRICTLY WORDLESS: do not include text, typography, words, letters, numbers, labels, captions, signs, speech bubbles, book covers, posters, logos, watermarks, borders, interface elements, or written symbols. Do not spell or display the concept anywhere in the image.",
-  ].join(" ");
+  const flipcardDirection = topic === "objects"
+    ? "Show the complete literal object, including its defining parts, from a clear three-quarter view. Do not show a raw material, ingredient, or related object instead."
+    : topic === "verbs"
+      ? "Show one friendly child clearly performing this exact action, with only one essential prop if needed. The pose must make the action unmistakable."
+      : topic === "animals"
+        ? "Show one complete, anatomically recognizable animal in a friendly pose."
+        : "Use one extremely simple scene with one friendly character whose pose and expression visibly demonstrate this exact quality. Avoid symbolic stand-ins.";
+  const prompt = variant === "flipcard-icon"
+    ? [
+        "Create one wordless 3D emoji-style learning icon for a children's flip card. IMAGE ONLY.",
+        `The exact concept is ${concept}.`,
+        clue ? `Its exact child-friendly meaning is: ${clue}` : "Make the exact concept immediately recognizable without explanation.",
+        flipcardDirection,
+        "Literal accuracy is the highest priority. Do not replace the concept with a metaphor, symbol, material, tool, logo, or vaguely related item.",
+        "Render one dominant subject with a clean, bold silhouette, rounded friendly proportions, smooth polished clay-like surfaces, gentle highlights, subtle depth, and bright natural colors. It should feel like a modern platform emoji while remaining original and not copying any vendor's emoji artwork.",
+        "Square centered composition. The subject fills about 75 percent of the frame and is fully visible. Use a plain warm-cream background with a faint soft grounding shadow. No scenery, decorative objects, border, or interface.",
+        "STRICTLY WORDLESS: no text, letters, numbers, labels, captions, signs, speech bubbles, logos, watermarks, or written symbols. Never display or spell the answer.",
+      ].join(" ")
+    : [
+        "Create a wordless educational picture for a children's learning game. IMAGE ONLY.",
+        `Clearly depict ${concept} as the main visual concept.`,
+        clue ? `Communicate this meaning visually: ${clue}` : "Make the concept immediately recognizable without explanation.",
+        storybookDirection,
+        "Use the same Tuklas house style every time: polished 3D storybook illustration, soft rounded forms, clean edges, subtle matte textures, gentle depth, friendly proportions, and soft diffused daylight.",
+        "Use a balanced royal-blue, sunny-yellow, leaf-green, coral, and warm-cream palette. Keep the background simple, bright, spacious, and uncluttered. Landscape composition, eye-level view, subject centered with comfortable margins.",
+        "STRICTLY WORDLESS: do not include text, typography, words, letters, numbers, labels, captions, signs, speech bubbles, book covers, posters, logos, watermarks, borders, interface elements, or written symbols. Do not spell or display the concept anywhere in the image.",
+      ].join(" ");
 
   try {
     const apiResponse = await fetch(

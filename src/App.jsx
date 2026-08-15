@@ -171,12 +171,12 @@ function Dashboard({ onSelectWordGame, onSelectTracing, onSelectLetters, onSelec
             </article>
 
             <article className="game-card featured-game letter-card-game" onClick={onSelectLetters}>
-              <div className="game-visual letter-flash-visual"><span>A</span><div><FluentEmoji emoji="🍎" alt="Apple" className="dashboard-emoji" size={72} /><small>APPLE</small></div></div>
+              <div className="game-visual letter-flash-visual"><span>A</span><div><FluentEmoji emoji="🍎" name="Apple" alt="Apple" className="dashboard-emoji" size={72} /><small>APPLE</small></div></div>
               <div className="game-card-body"><div className="card-tags"><span>Alphabet</span><span>Flashcards</span></div><h3>Letter Flashcards</h3><p>Explore A to Z sequentially or in a random order.</p><button className="card-play">Play now <span>→</span></button></div>
             </article>
 
             <article className="game-card featured-game flip-card-game" onClick={onSelectWordFlip}>
-              <div className="game-visual word-flip-visual"><div><FluentEmoji emoji="🐘" alt="Elephant" className="dashboard-emoji" size={76} /><b>?</b></div><i>↻</i></div>
+              <div className="game-visual word-flip-visual"><div><FluentEmoji emoji="🐘" name="Elephant" alt="Elephant" className="dashboard-emoji" size={76} /><b>?</b></div><i>↻</i></div>
               <div className="game-card-body"><div className="card-tags"><span>Vocabulary</span><span>Flip cards</span></div><h3>Word Flip Cards</h3><p>Guess endless illustrated words, then flip to reveal each answer.</p><button className="card-play">Play now <span>→</span></button></div>
             </article>
           </div>
@@ -449,7 +449,7 @@ function Game({ gamePuzzles, imageMode, onExit }) {
         <section className="game-left">
           <div className="puzzle-label-top"><span className="label-badge">{currentIdx + 1} / {gamePuzzles.length}</span><span className="label-text">Which word matches the clue?</span></div>
           <div className="image-card">
-            {displayImage ? <Image src={displayImage} alt="Visual clue for this word" className="puzzle-img" fill sizes="(max-width: 850px) 100vw, 52vw" unoptimized /> : loadingImages[puzzle.id] ? <div className="generating-scene"><span className="sparkle-loader">✦</span><strong>AI is drawing…</strong><small>This can take up to two minutes.</small></div> : <div className="emoji-scene"><FluentEmoji emoji={puzzle.emoji} alt={puzzle.emojiLabel} className="emoji-big" size={240} />{imageErrors[puzzle.id] && <small className="image-error">AI unavailable—we used the visual card instead.</small>}</div>}
+            {displayImage ? <Image src={displayImage} alt="Visual clue for this word" className="puzzle-img" fill sizes="(max-width: 850px) 100vw, 52vw" unoptimized /> : loadingImages[puzzle.id] ? <div className="generating-scene"><span className="sparkle-loader">✦</span><strong>AI is drawing…</strong><small>This can take up to two minutes.</small></div> : <div className="emoji-scene"><FluentEmoji emoji={puzzle.emoji} name={puzzle.answer} alt={puzzle.emojiLabel} className="emoji-big" size={240} />{imageErrors[puzzle.id] && <small className="image-error">AI unavailable—we used the visual card instead.</small>}</div>}
             {status === "correct" && <div className="image-overlay-win"><div className="win-check">✓</div><div className="win-label">{puzzle.answer}</div></div>}
           </div>
           <p className="puzzle-desc">{puzzle.description}</p>

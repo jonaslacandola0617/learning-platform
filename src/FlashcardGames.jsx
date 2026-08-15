@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import { getBuiltInDictionary, WORD_TOPICS } from "./topicWords";
 
@@ -14,6 +15,38 @@ const LETTER_CARDS = [
 ].map(([letter, word, emoji]) => ({ letter, word, emoji }));
 
 const FLIP_CACHE_KEY = "tuklas.flip-word-cache.v1";
+const OPENMOJI_BASE_URL = "https://cdn.jsdelivr.net/gh/hfg-gmuend/openmoji@17.0.0/color/svg";
+
+function getOpenMojiCodes(emoji) {
+  const exact = Array.from(String(emoji || ""), (character) => character.codePointAt(0).toString(16).toUpperCase()).join("-");
+  const withoutVariationSelectors = exact
+    .split("-")
+    .filter((code) => code !== "FE0F")
+    .join("-");
+  return [...new Set([exact, withoutVariationSelectors].filter(Boolean))];
+}
+
+function OpenMojiVisual({ emoji }) {
+  const codes = getOpenMojiCodes(emoji);
+  const [candidateIndex, setCandidateIndex] = useState(0);
+  const code = codes[candidateIndex];
+
+  if (!code) return <b aria-hidden="true">{emoji}</b>;
+
+  return (
+    <span className="openmoji-visual" aria-hidden="true">
+      <Image
+        src={`${OPENMOJI_BASE_URL}/${code}.svg`}
+        width={360}
+        height={360}
+        sizes="(max-width: 600px) 60vw, 360px"
+        unoptimized
+        alt=""
+        onError={() => setCandidateIndex((current) => current + 1)}
+      />
+    </span>
+  );
+}
 
 function shuffle(items) {
   const copy = [...items];
@@ -124,12 +157,12 @@ export function WordFlipSetup({ brand, onBack, onStart }) {
     <div className="platform-page flash-setup-page">
       <nav className="platform-nav"><button className="back-link" onClick={onBack}>← Back</button>{brand}<span className="nav-step">Word flip cards</span></nav>
       <main className="setup-shell flash-setup-shell">
-        <header className="setup-intro"><span className="eyebrow">WORD FLIP CARDS</span><h1>Choose a word collection</h1><p>Look at the emoji, guess the word, and flip the card to reveal the answer.</p></header>
+        <header className="setup-intro"><span className="eyebrow">WORD FLIP CARDS</span><h1>Choose a word collection</h1><p>Look at the illustration, guess the word, and flip the card to reveal the answer.</p></header>
         <section className="setup-section">
           <div className="setup-section-title"><span>1</span><div><h2>Choose a topic</h2><p>The game continues for as long as you want to play.</p></div></div>
           <div className="flip-topic-options">{options.map((option) => <button key={option.id} className={topic === option.id ? "selected" : ""} onClick={() => setTopic(option.id)}><span>{option.icon}</span><strong>{option.label}</strong><small>{option.description}</small></button>)}</div>
         </section>
-        <div className="setup-footer"><span>Endless cards • Emoji visuals • Batched word generation</span><button className="primary-button" onClick={() => onStart(topic)}>Start flipping <span>→</span></button></div>
+        <div className="setup-footer"><span>Endless cards • OpenMoji visuals • Batched word generation</span><button className="primary-button" onClick={() => onStart(topic)}>Start flipping <span>→</span></button></div>
       </main>
     </div>
   );
@@ -186,14 +219,15 @@ export function WordFlipGame({ brand, topic, onExit }) {
     <div className="game-page word-flip-page">
       <header className="game-header"><button className="game-home" onClick={onExit}>← Games</button>{brand}<div className="flash-mode-badge">Card {seenCount}</div></header>
       <main className="word-flip-shell">
-        <div className="flash-stage-heading"><div><span className="eyebrow">WORD FLIP CARDS</span><h1>What word is this?</h1><p>Guess from the emoji, then tap the card to check.</p></div>{generationStatus && <span className="batch-status">{generationStatus}</span>}</div>
-        <button className={`word-flip-card ${flipped ? "flipped" : ""}`} onClick={() => setFlipped((current) => !current)} aria-label={flipped ? `Answer: ${card.answer}. Tap to see the emoji.` : "Tap to reveal the answer"}>
+        <div className="flash-stage-heading"><div><span className="eyebrow">WORD FLIP CARDS</span><h1>What word is this?</h1><p>Guess from the illustration, then tap the card to check.</p></div>{generationStatus && <span className="batch-status">{generationStatus}</span>}</div>
+        <button className={`word-flip-card ${flipped ? "flipped" : ""}`} onClick={() => setFlipped((current) => !current)} aria-label={flipped ? `Answer: ${card.answer}. Tap to see the illustration.` : "Tap to reveal the answer"}>
           <span className="flip-card-inner">
-            <span className="flip-card-face flip-card-front"><b>{card.emoji}</b><small>Tap to reveal</small></span>
-            <span className="flip-card-face flip-card-back"><small>The answer is</small><strong>{card.answer}</strong><p>{card.hint}</p><em>Tap to see the emoji</em></span>
+            <span className="flip-card-face flip-card-front"><OpenMojiVisual key={`${card.answer}:${card.emoji}`} emoji={card.emoji} /><small>Tap to reveal</small></span>
+            <span className="flip-card-face flip-card-back"><small>The answer is</small><strong>{card.answer}</strong><p>{card.hint}</p><em>Tap to see the illustration</em></span>
           </span>
         </button>
-        <div className="word-flip-actions"><button className="secondary-button" onClick={() => setFlipped((current) => !current)}>{flipped ? "Show emoji" : "Reveal answer"}</button><button className="primary-button" onClick={nextCard}>Next word →</button></div>
+        <div className="word-flip-actions"><button className="secondary-button" onClick={() => setFlipped((current) => !current)}>{flipped ? "Show illustration" : "Reveal answer"}</button><button className="primary-button" onClick={nextCard}>Next word →</button></div>
+        <p className="openmoji-credit">Visuals by <a href="https://openmoji.org/" target="_blank" rel="noreferrer">OpenMoji</a> · CC BY-SA 4.0</p>
       </main>
     </div>
   );

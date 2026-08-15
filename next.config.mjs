@@ -9,6 +9,11 @@ const nextConfig = {
         hostname: "raw.githubusercontent.com",
         pathname: "/jonaslacandola0617/learning-platform/**",
       },
+      {
+        protocol: "https",
+        hostname: "cdn.jsdelivr.net",
+        pathname: "/gh/hfg-gmuend/openmoji@17.0.0/**",
+      },
     ],
   },
 };

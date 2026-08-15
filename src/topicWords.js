@@ -94,9 +94,6 @@ const topicWords = {
   ],
 };
 
-// These words only have a symbolic or related emoji, rather than an emoji that
-// literally shows the concept. Word Flip Cards can replace these with a cached
-// Cloudflare visual; the other games continue using their instant emoji cards.
 export function getBuiltInWords(topicId, count, randomize = false) {
   const source = topicWords[topicId] || topicWords.animals;
   const ordered = randomize

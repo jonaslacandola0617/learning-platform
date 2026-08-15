@@ -14,7 +14,7 @@ const LETTER_CARDS = [
   ["Y", "Yo-yo", "🪀"], ["Z", "Zebra", "🦓"],
 ].map(([letter, word, emoji]) => ({ letter, word, emoji }));
 
-const FLIP_CACHE_KEY = "tuklas.flip-word-cache.v1";
+const FLIP_CACHE_KEY = "tuklas.flip-word-cache.v2";
 const OPENMOJI_BASE_URL = "https://cdn.jsdelivr.net/gh/hfg-gmuend/openmoji@17.0.0/color/svg";
 
 function getOpenMojiCodes(emoji) {
@@ -179,7 +179,7 @@ export function WordFlipGame({ brand, topic, onExit }) {
   const card = cards[index];
 
   async function requestNewBatch() {
-    if (requesting.current || generationDisabled.current) return;
+    if (topic === "values" || requesting.current || generationDisabled.current) return;
     requesting.current = true;
     setGenerationStatus("Adding 20 new words to your library…");
     const exclusions = uniqueCards([...builtInCards(topic), ...cards]).map((item) => item.answer).slice(-240);

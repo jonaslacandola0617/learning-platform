@@ -11,6 +11,13 @@ const ALLOWED_COUNTS = new Set([5, 10, 15, 20]);
 const ALLOWED_WORD = /^[A-Z]{2,14}$/;
 const MAX_EXCLUDED_WORDS = 240;
 const MAX_GENERATION_ATTEMPTS = 3;
+const MIN_CANDIDATES_PER_ATTEMPT = 20;
+const MAX_CANDIDATES_PER_ATTEMPT = 30;
+const VARIATION_DIRECTIONS = [
+  "Cover many different concepts and starting letters.",
+  "Prefer less obvious but still familiar elementary-school words and different starting letters.",
+  "Search broadly across subcategories, habitats, situations, and everyday examples not used before.",
+];
 
 export const runtime = "nodejs";
 export const maxDuration = 60;
@@ -85,7 +92,11 @@ export async function POST(request) {
   try {
     for (let attempt = 1; attempt <= MAX_GENERATION_ATTEMPTS; attempt += 1) {
       const remainingCount = count - acceptedWords.length;
-      const attemptExclusions = [...excludedAnswers, ...acceptedWords.map((item) => item.answer)];
+      const candidateCount = Math.min(
+        MAX_CANDIDATES_PER_ATTEMPT,
+        Math.max(MIN_CANDIDATES_PER_ATTEMPT, remainingCount * 2),
+      );
+      const attemptExclusions = [...excludedAnswers];
       const apiResponse = await fetch(
         `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`,
         {
@@ -103,14 +114,14 @@ export async function POST(request) {
             contents: [{
               role: "user",
               parts: [{
-                text: `Create exactly ${remainingCount} NEW and varied words about ${ALLOWED_TOPICS[topic]}. Forbidden answers already shown to the learner: ${attemptExclusions.length ? attemptExclusions.join(", ") : forbiddenList}. This is variation attempt ${attempt}; choose different concepts, not merely a different order.`,
+                text: `Create exactly ${candidateCount} candidate words about ${ALLOWED_TOPICS[topic]}. We need ${remainingCount} usable new words from this broad candidate pool. Forbidden answers already shown to the learner: ${attemptExclusions.length ? attemptExclusions.join(", ") : forbiddenList}. ${VARIATION_DIRECTIONS[attempt - 1]} Never include a forbidden answer.`,
               }],
             }],
             generationConfig: {
               responseMimeType: "application/json",
-              responseSchema: createWordSchema(remainingCount),
+              responseSchema: createWordSchema(candidateCount),
               temperature: 1.15,
-              maxOutputTokens: remainingCount >= 15 ? 4096 : 2048,
+              maxOutputTokens: 8192,
             },
           }),
           cache: "no-store",
@@ -153,6 +164,7 @@ export async function POST(request) {
         attempt,
         topic,
         requested: count,
+        candidates: words.length,
         accepted: acceptedWords.length,
       });
     }

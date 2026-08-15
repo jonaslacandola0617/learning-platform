@@ -179,7 +179,7 @@ export function WordFlipGame({ brand, topic, onExit }) {
   const card = cards[index];
 
   async function requestNewBatch() {
-    if (topic === "values" || requesting.current || generationDisabled.current) return;
+    if (requesting.current || generationDisabled.current) return;
     requesting.current = true;
     setGenerationStatus("Adding 20 new words to your library…");
     const exclusions = uniqueCards([...builtInCards(topic), ...cards]).map((item) => item.answer).slice(-240);

@@ -1,4 +1,6 @@
 import "../src/App.css";
+import "../src/KidMode.css";
+import { KidMode } from "../src/KidMode";
 import { siteUrl } from "../src/site";
 
 export const metadata = {
@@ -27,7 +29,7 @@ export const viewport = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en-PH">
-      <body>{children}</body>
+      <body><KidMode>{children}</KidMode></body>
     </html>
   );
 }

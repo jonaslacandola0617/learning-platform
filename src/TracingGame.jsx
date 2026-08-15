@@ -171,6 +171,7 @@ function distance(a, b) {
 
 function TracingBoard({ item, color, onProgress, resetKey }) {
   const svgRef = useRef(null);
+  const activePointerId = useRef(null);
   const activeStroke = useRef(null);
   const totalLength = useRef(0);
   const [strokes, setStrokes] = useState([]);
@@ -181,7 +182,9 @@ function TracingBoard({ item, color, onProgress, resetKey }) {
   }
 
   function beginStroke(event) {
+    if (activePointerId.current !== null || (event.pointerType === "mouse" && event.button !== 0)) return;
     event.preventDefault();
+    activePointerId.current = event.pointerId;
     svgRef.current.setPointerCapture(event.pointerId);
     const stroke = { id: `${Date.now()}-${event.pointerId}`, color, points: [pointFromEvent(event)] };
     activeStroke.current = stroke;
@@ -189,7 +192,7 @@ function TracingBoard({ item, color, onProgress, resetKey }) {
   }
 
   function moveStroke(event) {
-    if (!activeStroke.current) return;
+    if (event.pointerId !== activePointerId.current || !activeStroke.current) return;
     event.preventDefault();
     const nextPoint = pointFromEvent(event);
     const points = activeStroke.current.points;
@@ -204,11 +207,15 @@ function TracingBoard({ item, color, onProgress, resetKey }) {
   }
 
   function endStroke(event) {
+    if (event.pointerId !== activePointerId.current) return;
     if (svgRef.current?.hasPointerCapture(event.pointerId)) svgRef.current.releasePointerCapture(event.pointerId);
+    activePointerId.current = null;
     activeStroke.current = null;
   }
 
   function undo() {
+    activePointerId.current = null;
+    activeStroke.current = null;
     setStrokes((current) => {
       const removed = current[current.length - 1];
       if (removed) totalLength.current = Math.max(0, totalLength.current - removed.points.slice(1).reduce((sum, point, index) => sum + distance(removed.points[index], point), 0));
@@ -218,6 +225,7 @@ function TracingBoard({ item, color, onProgress, resetKey }) {
   }
 
   function clear() {
+    activePointerId.current = null;
     activeStroke.current = null;
     totalLength.current = 0;
     setStrokes([]);
@@ -225,6 +233,7 @@ function TracingBoard({ item, color, onProgress, resetKey }) {
   }
 
   useEffect(() => {
+    activePointerId.current = null;
     activeStroke.current = null;
     totalLength.current = 0;
   }, [item.id, resetKey]);
@@ -233,7 +242,7 @@ function TracingBoard({ item, color, onProgress, resetKey }) {
 
   return (
     <div className="tracing-board-wrap">
-      <svg ref={svgRef} className="tracing-board" viewBox="0 0 600 360" role="img" aria-label={`Tracing guide for ${item.label}`} onPointerDown={beginStroke} onPointerMove={moveStroke} onPointerUp={endStroke} onPointerCancel={endStroke}>
+      <svg ref={svgRef} className="tracing-board" viewBox="0 0 600 360" role="img" aria-label={`Tracing guide for ${item.label}`} onPointerDown={beginStroke} onPointerMove={moveStroke} onPointerUp={endStroke} onPointerCancel={endStroke} onLostPointerCapture={endStroke}>
         <rect width="600" height="360" rx="28" fill="#ffffff" />
         <path d="M 48 80 H 552 M 48 180 H 552 M 48 280 H 552" stroke="#edf3fa" strokeWidth="2" strokeDasharray="8 10" />
         {item.path ? <path d={item.path} className="trace-guide-path" /> : <text x="300" y="265" className="trace-guide-character">{item.character}</text>}

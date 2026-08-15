@@ -28,7 +28,7 @@ export const viewport = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en-PH">
+    <html lang="en-PH" style={{ colorScheme: "light" }}>
       <body><KidMode>{children}</KidMode></body>
     </html>
   );

@@ -29,6 +29,29 @@ function getOutputText(data) {
     .trim();
 }
 
+function createWordSchema(count) {
+  return {
+    type: "OBJECT",
+    properties: {
+      words: {
+        type: "ARRAY",
+        minItems: count,
+        maxItems: count,
+        items: {
+          type: "OBJECT",
+          properties: {
+            answer: { type: "STRING" },
+            hint: { type: "STRING" },
+            emoji: { type: "STRING" },
+          },
+          required: ["answer", "hint", "emoji"],
+        },
+      },
+    },
+    required: ["words"],
+  };
+}
+
 export async function POST(request) {
   if (!process.env.GEMINI_API_KEY) {
     return json({ error: "Gemini word generation is not configured yet." }, 503);
@@ -53,27 +76,7 @@ export async function POST(request) {
       .filter((word) => ALLOWED_WORD.test(word)),
   )].slice(-MAX_EXCLUDED_WORDS);
   const excludedAnswers = new Set(excludedWords);
-
-  const wordSchema = {
-    type: "OBJECT",
-    properties: {
-      words: {
-        type: "ARRAY",
-        minItems: count,
-        maxItems: count,
-        items: {
-          type: "OBJECT",
-          properties: {
-            answer: { type: "STRING" },
-            hint: { type: "STRING" },
-            emoji: { type: "STRING" },
-          },
-          required: ["answer", "hint", "emoji"],
-        },
-      },
-    },
-    required: ["words"],
-  };
+  const acceptedWords = [];
 
   const model = process.env.GEMINI_TEXT_MODEL || "gemini-3.5-flash-lite";
 
@@ -81,6 +84,8 @@ export async function POST(request) {
 
   try {
     for (let attempt = 1; attempt <= MAX_GENERATION_ATTEMPTS; attempt += 1) {
+      const remainingCount = count - acceptedWords.length;
+      const attemptExclusions = [...excludedAnswers, ...acceptedWords.map((item) => item.answer)];
       const apiResponse = await fetch(
         `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`,
         {
@@ -98,14 +103,14 @@ export async function POST(request) {
             contents: [{
               role: "user",
               parts: [{
-                text: `Create exactly ${count} NEW and varied words about ${ALLOWED_TOPICS[topic]}. Forbidden answers already shown to the learner: ${forbiddenList}. This is variation attempt ${attempt}; choose different concepts, not merely a different order.`,
+                text: `Create exactly ${remainingCount} NEW and varied words about ${ALLOWED_TOPICS[topic]}. Forbidden answers already shown to the learner: ${attemptExclusions.length ? attemptExclusions.join(", ") : forbiddenList}. This is variation attempt ${attempt}; choose different concepts, not merely a different order.`,
               }],
             }],
             generationConfig: {
               responseMimeType: "application/json",
-              responseSchema: wordSchema,
+              responseSchema: createWordSchema(remainingCount),
               temperature: 1.15,
-              maxOutputTokens: count === 20 ? 4096 : 2048,
+              maxOutputTokens: remainingCount >= 15 ? 4096 : 2048,
             },
           }),
           cache: "no-store",
@@ -118,28 +123,46 @@ export async function POST(request) {
       }
 
       const outputText = getOutputText(data);
-      const parsed = outputText ? JSON.parse(outputText) : null;
+      let parsed;
+      try {
+        parsed = outputText ? JSON.parse(outputText) : null;
+      } catch {
+        console.warn("generate-words: Gemini returned malformed JSON", { attempt, topic });
+        continue;
+      }
+
       const words = parsed?.words?.map((item) => ({
         answer: String(item.answer || "").toLocaleUpperCase("en-US").replace(/[^A-Z]/g, ""),
         hint: String(item.hint || "").trim().slice(0, 100),
         emoji: String(item.emoji || "✨").trim().slice(0, 8),
         topic,
-      }));
+      })) || [];
 
-      const uniqueAnswers = new Set(words?.map((item) => item.answer));
-      const isValid = words
-        && words.length === count
-        && uniqueAnswers.size === count
-        && words.every((item) => ALLOWED_WORD.test(item.answer) && item.hint)
-        && words.every((item) => !excludedAnswers.has(item.answer));
-
-      if (isValid) {
-        return json({ words, source: "gemini" });
+      for (const word of words) {
+        if (acceptedWords.length === count) break;
+        if (!ALLOWED_WORD.test(word.answer) || !word.hint || excludedAnswers.has(word.answer)) continue;
+        excludedAnswers.add(word.answer);
+        acceptedWords.push(word);
       }
+
+      if (acceptedWords.length === count) {
+        return json({ words: acceptedWords, source: "gemini" });
+      }
+
+      console.warn("generate-words: retrying incomplete batch", {
+        attempt,
+        topic,
+        requested: count,
+        accepted: acceptedWords.length,
+      });
     }
 
-    return json({ error: "Gemini repeated previously shown words. Please generate again." }, 502);
-  } catch {
+    return json({ error: "Gemini could not create enough unique words. Please try again." }, 502);
+  } catch (error) {
+    console.error("generate-words: request failed", {
+      topic,
+      message: error instanceof Error ? error.message : String(error),
+    });
     return json({ error: "Could not reach the word generation service." }, 500);
   }
 }

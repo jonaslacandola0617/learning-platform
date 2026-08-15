@@ -11,8 +11,8 @@ const nextConfig = {
       },
       {
         protocol: "https",
-        hostname: "cdn.jsdelivr.net",
-        pathname: "/gh/hfg-gmuend/openmoji@17.0.0/**",
+        hostname: "emoji.fluent-cdn.com",
+        pathname: "/1.0.0/100x100/**",
       },
     ],
   },

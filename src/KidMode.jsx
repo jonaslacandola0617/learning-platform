@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
 const KID_MODE_KEY = "tuklas.kid-mode-active";
+const HISTORY_GUARD_KEY = "__tuklasKidLock";
 const HOLD_TO_EXIT_MS = 2200;
 
 function getFullscreenElement() {
@@ -37,6 +38,12 @@ async function exitAppFullscreen() {
   if (document.webkitExitFullscreen) document.webkitExitFullscreen();
 }
 
+function getHistoryState() {
+  if (typeof window === "undefined") return {};
+  const state = window.history.state;
+  return state && typeof state === "object" ? state : {};
+}
+
 export function KidMode({ children }) {
   const [modeActive, setModeActive] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
@@ -48,6 +55,7 @@ export function KidMode({ children }) {
   const holdFrame = useRef(null);
   const holdStartedAt = useRef(0);
   const wakeLock = useRef(null);
+  const historyGuardEnabled = useRef(false);
 
   const releaseWakeLock = useCallback(async () => {
     try {
@@ -65,6 +73,13 @@ export function KidMode({ children }) {
     } catch {
       // Wake Lock is optional; fullscreen/kid lock still works without it.
     }
+  }, []);
+
+  const pushHistoryGuard = useCallback(() => {
+    if (typeof window === "undefined") return;
+    const state = getHistoryState();
+    if (state[HISTORY_GUARD_KEY]) return;
+    window.history.pushState({ ...state, [HISTORY_GUARD_KEY]: true }, "", window.location.href);
   }, []);
 
   useEffect(() => {
@@ -105,6 +120,28 @@ export function KidMode({ children }) {
   }, [isFullscreen, modeActive, releaseWakeLock, requestWakeLock]);
 
   useEffect(() => {
+    if (!modeActive) {
+      historyGuardEnabled.current = false;
+      return undefined;
+    }
+
+    historyGuardEnabled.current = true;
+    pushHistoryGuard();
+
+    const blockBrowserBack = () => {
+      if (!historyGuardEnabled.current) return;
+      const state = getHistoryState();
+      window.history.pushState({ ...state, [HISTORY_GUARD_KEY]: true }, "", window.location.href);
+    };
+
+    window.addEventListener("popstate", blockBrowserBack);
+    return () => {
+      historyGuardEnabled.current = false;
+      window.removeEventListener("popstate", blockBrowserBack);
+    };
+  }, [modeActive, pushHistoryGuard]);
+
+  useEffect(() => {
     const handleVisibility = () => {
       if (modeActive && isFullscreen && document.visibilityState === "visible") requestWakeLock();
     };
@@ -123,6 +160,21 @@ export function KidMode({ children }) {
 
   const unlock = useCallback(async () => {
     stopHold();
+    historyGuardEnabled.current = false;
+
+    let collapseGuardEntry = false;
+    try {
+      const state = getHistoryState();
+      collapseGuardEntry = Boolean(state[HISTORY_GUARD_KEY]);
+      if (collapseGuardEntry) {
+        const nextState = { ...state };
+        delete nextState[HISTORY_GUARD_KEY];
+        window.history.replaceState(nextState, "", window.location.href);
+      }
+    } catch {
+      // The history guard is best-effort and should never block a parent exit.
+    }
+
     setModeActive(false);
     setParentPanelOpen(false);
     setNotice("");
@@ -131,6 +183,16 @@ export function KidMode({ children }) {
       if (getFullscreenElement()) await exitAppFullscreen();
     } catch {
       // State is still unlocked even if the browser already left fullscreen.
+    }
+
+    if (collapseGuardEntry) {
+      window.setTimeout(() => {
+        try {
+          window.history.back();
+        } catch {
+          // Ignore browsers that reject the cleanup navigation.
+        }
+      }, 0);
     }
   }, [releaseWakeLock, stopHold]);
 

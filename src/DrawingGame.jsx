@@ -43,6 +43,75 @@ const TEMPLATES = [
     ],
   },
   {
+    id: "dog", category: "animals", label: "Dog",
+    elements: [
+      ["path", { d: "M272 170 Q238 102 181 126 Q142 143 174 221 L223 269 Q201 344 244 397 Q299 461 400 455 Q501 461 556 397 Q599 344 577 269 L626 221 Q658 143 619 126 Q562 102 528 170 Q471 132 400 132 Q329 132 272 170 Z" }],
+      ["ellipse", { cx: 400, cy: 310, rx: 92, ry: 72 }],
+      ["circle", { cx: 337, cy: 252, r: 11, fill: "#26344a" }], ["circle", { cx: 463, cy: 252, r: 11, fill: "#26344a" }],
+      ["ellipse", { cx: 400, cy: 302, rx: 21, ry: 15, fill: "#26344a" }],
+      ["path", { d: "M400 317 V339 Q375 364 349 340 M400 339 Q425 364 451 340 M318 385 Q350 410 382 391 M482 385 Q450 410 418 391" }],
+    ],
+  },
+  {
+    id: "rabbit", category: "animals", label: "Rabbit",
+    elements: [
+      ["ellipse", { cx: 329, cy: 142, rx: 48, ry: 112 }], ["ellipse", { cx: 471, cy: 142, rx: 48, ry: 112 }],
+      ["ellipse", { cx: 400, cy: 309, rx: 174, ry: 142 }],
+      ["circle", { cx: 342, cy: 276, r: 11, fill: "#26344a" }], ["circle", { cx: 458, cy: 276, r: 11, fill: "#26344a" }],
+      ["path", { d: "M387 321 Q400 337 413 321 M400 337 Q378 363 354 345 M400 337 Q422 363 446 345 M303 326 L222 309 M303 346 L216 352 M497 326 L578 309 M497 346 L584 352" }],
+      ["circle", { cx: 400, cy: 322, r: 11 }],
+    ],
+  },
+  {
+    id: "turtle", category: "animals", label: "Turtle",
+    elements: [
+      ["ellipse", { cx: 386, cy: 283, rx: 202, ry: 132 }],
+      ["circle", { cx: 617, cy: 272, r: 61 }],
+      ["path", { d: "M208 222 Q134 170 107 216 Q130 276 201 278 M211 345 Q142 394 113 352 Q132 301 205 296 M523 190 Q574 128 616 161 Q604 219 536 240 M523 365 Q575 425 615 389 Q603 330 536 316 M178 280 Q127 252 88 280 Q127 310 179 297" }],
+      ["path", { d: "M262 193 L335 276 L266 368 M335 276 L433 173 M335 276 L444 380 M433 173 L522 271 L444 380 M335 276 H522" }],
+      ["circle", { cx: 637, cy: 254, r: 9, fill: "#26344a" }],
+    ],
+  },
+  {
+    id: "elephant", category: "animals", label: "Elephant",
+    elements: [
+      ["path", { d: "M282 192 Q211 131 168 192 Q142 254 217 319 Q238 339 278 323 M518 192 Q589 131 632 192 Q658 254 583 319 Q562 339 522 323" }],
+      ["ellipse", { cx: 400, cy: 278, rx: 150, ry: 155 }],
+      ["path", { d: "M371 350 Q365 448 410 462 Q454 452 442 397 Q436 362 430 323" }],
+      ["circle", { cx: 350, cy: 257, r: 10, fill: "#26344a" }], ["circle", { cx: 450, cy: 257, r: 10, fill: "#26344a" }],
+      ["path", { d: "M325 302 Q342 320 359 302 M441 302 Q458 320 475 302" }],
+    ],
+  },
+  {
+    id: "owl", category: "animals", label: "Owl",
+    elements: [
+      ["path", { d: "M250 181 L278 82 L349 138 Q400 115 451 138 L522 82 L550 181 Q596 238 573 345 Q548 456 400 466 Q252 456 227 345 Q204 238 250 181 Z" }],
+      ["circle", { cx: 335, cy: 264, r: 72 }], ["circle", { cx: 465, cy: 264, r: 72 }],
+      ["circle", { cx: 335, cy: 264, r: 20, fill: "#26344a" }], ["circle", { cx: 465, cy: 264, r: 20, fill: "#26344a" }],
+      ["path", { d: "M400 286 L374 322 H426 Z M282 369 Q400 420 518 369 M332 446 L305 484 M468 446 L495 484" }],
+    ],
+  },
+  {
+    id: "penguin", category: "animals", label: "Penguin",
+    elements: [
+      ["ellipse", { cx: 400, cy: 290, rx: 148, ry: 192 }],
+      ["ellipse", { cx: 400, cy: 327, rx: 101, ry: 126 }],
+      ["path", { d: "M274 239 Q201 287 226 373 Q264 338 300 313 M526 239 Q599 287 574 373 Q536 338 500 313" }],
+      ["circle", { cx: 354, cy: 228, r: 10, fill: "#26344a" }], ["circle", { cx: 446, cy: 228, r: 10, fill: "#26344a" }],
+      ["path", { d: "M400 254 L367 280 L433 280 Z M347 466 L300 492 M453 466 L500 492" }],
+    ],
+  },
+  {
+    id: "lion", category: "animals", label: "Lion",
+    elements: [
+      ["path", { d: "M400 66 Q446 91 485 70 Q513 105 554 109 Q556 154 592 180 Q572 219 590 258 Q555 289 558 334 Q515 345 491 382 Q452 369 419 400 Q381 373 344 394 Q315 359 272 357 Q269 314 233 286 Q252 246 230 208 Q264 177 262 134 Q305 124 331 89 Q367 104 400 66 Z" }],
+      ["circle", { cx: 400, cy: 253, r: 137 }],
+      ["circle", { cx: 350, cy: 232, r: 10, fill: "#26344a" }], ["circle", { cx: 450, cy: 232, r: 10, fill: "#26344a" }],
+      ["ellipse", { cx: 400, cy: 288, rx: 22, ry: 16, fill: "#26344a" }],
+      ["path", { d: "M400 304 Q374 338 345 313 M400 304 Q426 338 455 313 M309 201 Q281 170 286 134 M491 201 Q519 170 514 134" }],
+    ],
+  },
+  {
     id: "house", category: "objects", label: "House",
     elements: [
       ["path", { d: "M165 250 L400 75 L635 250 M210 220 V450 H590 V220 M325 450 V325 H475 V450" }],
@@ -65,6 +134,68 @@ const TEMPLATES = [
       ["path", { d: "M400 55 L595 235 L400 382 L205 235 Z M400 55 V382 M205 235 H595" }],
       ["path", { d: "M400 382 Q330 414 390 448 Q448 478 382 500" }],
       ["path", { d: "M370 416 L332 390 L338 438 Z M410 456 L451 432 L444 478 Z" }],
+    ],
+  },
+  {
+    id: "car", category: "objects", label: "Car",
+    elements: [
+      ["path", { d: "M145 321 L191 230 Q207 198 246 198 H494 Q530 198 552 225 L621 310 Q655 318 664 348 V399 H136 V351 Q136 333 145 321 Z" }],
+      ["path", { d: "M229 230 L284 143 H463 L526 230 M285 143 V230 M463 143 V230" }],
+      ["circle", { cx: 242, cy: 399, r: 49 }], ["circle", { cx: 556, cy: 399, r: 49 }],
+      ["circle", { cx: 242, cy: 399, r: 18 }], ["circle", { cx: 556, cy: 399, r: 18 }],
+      ["path", { d: "M151 333 H201 M596 333 H650 M330 276 H382" }],
+    ],
+  },
+  {
+    id: "boat", category: "objects", label: "Boat",
+    elements: [
+      ["path", { d: "M142 326 H658 L589 427 H216 Z" }],
+      ["path", { d: "M322 326 V126 H476 V326 M322 155 L205 274 H322 M476 155 L591 274 H476" }],
+      ["path", { d: "M95 455 Q151 427 207 455 T319 455 T431 455 T543 455 T655 455 T767 455" }],
+      ["circle", { cx: 365, cy: 371, r: 15 }], ["circle", { cx: 435, cy: 371, r: 15 }],
+    ],
+  },
+  {
+    id: "airplane", category: "objects", label: "Airplane",
+    elements: [
+      ["path", { d: "M92 286 L327 252 L394 79 Q404 56 419 80 L442 244 L666 180 Q703 169 711 190 Q713 211 682 230 L474 314 L491 435 L571 470 L565 491 L428 462 L294 491 L287 470 L365 435 L377 316 L111 330 Q76 334 73 313 Q72 294 92 286 Z" }],
+      ["circle", { cx: 428, cy: 285, r: 16 }],
+      ["path", { d: "M397 244 H442 M377 316 H474" }],
+    ],
+  },
+  {
+    id: "balloon", category: "objects", label: "Balloon",
+    elements: [
+      ["ellipse", { cx: 400, cy: 215, rx: 139, ry: 158 }],
+      ["path", { d: "M374 365 L400 397 L426 365 Z M400 397 Q330 425 397 458 Q451 486 385 510" }],
+      ["path", { d: "M330 103 Q301 141 299 190" }],
+    ],
+  },
+  {
+    id: "backpack", category: "objects", label: "Backpack",
+    elements: [
+      ["path", { d: "M267 178 Q267 117 326 91 Q400 59 474 91 Q533 117 533 178 V445 H267 Z" }],
+      ["path", { d: "M337 116 Q341 60 400 60 Q459 60 463 116 M267 236 Q209 246 208 329 V401 M533 236 Q591 246 592 329 V401" }],
+      ["rect", { x: 320, y: 285, width: 160, height: 105, rx: 27 }],
+      ["path", { d: "M320 326 H480 M363 285 V390 M437 285 V390" }],
+    ],
+  },
+  {
+    id: "bicycle", category: "objects", label: "Bicycle",
+    elements: [
+      ["circle", { cx: 240, cy: 365, r: 98 }], ["circle", { cx: 575, cy: 365, r: 98 }],
+      ["path", { d: "M240 365 L350 365 L438 221 L575 365 H350 L284 220 H391 M438 221 L480 175 H535 M281 220 H229 M350 365 L395 285 M395 285 H456" }],
+      ["circle", { cx: 350, cy: 365, r: 19 }],
+      ["path", { d: "M337 365 L309 396 M363 365 L391 334" }],
+    ],
+  },
+  {
+    id: "ice-cream", category: "objects", label: "Ice Cream",
+    elements: [
+      ["path", { d: "M303 242 L400 476 L497 242 Z" }],
+      ["path", { d: "M305 242 Q268 207 295 169 Q318 138 350 151 Q356 91 409 90 Q456 91 464 139 Q506 129 526 165 Q548 206 495 242 Z" }],
+      ["path", { d: "M335 320 L454 401 M319 278 L475 386 M373 410 L459 323 M347 354 L484 260" }],
+      ["circle", { cx: 382, cy: 160, r: 8 }], ["circle", { cx: 443, cy: 188, r: 8 }],
     ],
   },
 ];
@@ -102,19 +233,19 @@ export function DrawingSetup({ onBack, onStart, brand }) {
     <div className="platform-page drawing-setup-page">
       <nav className="platform-nav"><button className="back-link" onClick={onBack}>← Back</button>{brand}<span className="nav-step">Draw &amp; Color setup</span></nav>
       <main className="setup-shell drawing-setup-shell">
-        <header className="setup-intro"><span className="eyebrow">DRAW &amp; COLOR</span><h1>What would you like to create?</h1><p>Draw anything on a blank page or color a friendly animal or object.</p></header>
+        <header className="setup-intro"><span className="eyebrow">DRAW &amp; COLOR</span><h1>What would you like to create?</h1><p>Draw anything on a blank page or choose from 20 friendly coloring pages.</p></header>
 
         <section className="setup-section">
           <div className="setup-section-title"><span>1</span><div><h2>Choose a canvas</h2><p>You can switch colors and brush sizes while you draw.</p></div></div>
           <div className="drawing-mode-options">
             <button className={mode === "free" ? "selected" : ""} onClick={() => setMode("free")}><span className="blank-page-preview"><i /><i /><i /></span><strong>Free drawing</strong><small>Start with a blank page</small></button>
-            <button className={mode === "coloring" && category === "animals" ? "selected" : ""} onClick={() => { setMode("coloring"); chooseCategory("animals"); }}><PagePreview template={TEMPLATES[0]} /><strong>Color animals</strong><small>Cat, fish, or butterfly</small></button>
-            <button className={mode === "coloring" && category === "objects" ? "selected" : ""} onClick={() => { setMode("coloring"); chooseCategory("objects"); }}><PagePreview template={TEMPLATES[3]} /><strong>Color objects</strong><small>House, rocket, or kite</small></button>
+            <button className={mode === "coloring" && category === "animals" ? "selected" : ""} onClick={() => { setMode("coloring"); chooseCategory("animals"); }}><PagePreview template={TEMPLATES.find((template) => template.id === "cat")} /><strong>Color animals</strong><small>10 animal pages</small></button>
+            <button className={mode === "coloring" && category === "objects" ? "selected" : ""} onClick={() => { setMode("coloring"); chooseCategory("objects"); }}><PagePreview template={TEMPLATES.find((template) => template.id === "house")} /><strong>Color objects</strong><small>10 object pages</small></button>
           </div>
         </section>
 
         {mode === "coloring" && <section className="setup-section">
-          <div className="setup-section-title"><span>2</span><div><h2>Choose a coloring page</h2><p>Pick one now—you can return later to try another.</p></div></div>
+          <div className="setup-section-title"><span>2</span><div><h2>Choose a coloring page</h2><p>{pages.length} pages available in this category. Pick one now—you can return later to try another.</p></div></div>
           <div className="coloring-page-options">{pages.map((template) => <button key={template.id} className={templateId === template.id ? "selected" : ""} onClick={() => setTemplateId(template.id)}><PagePreview template={template} /><strong>{template.label}</strong></button>)}</div>
         </section>}
 
@@ -185,7 +316,6 @@ function DrawingCanvas({ color, strokeWidth, template, erasing, clearKey, onHist
     onHistoryChange(0);
   }
 
-  // A new key remounts this component; it is also used by the parent to label a fresh page.
   void clearKey;
 
   return (

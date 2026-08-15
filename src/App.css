@@ -264,7 +264,7 @@ button { cursor:pointer; }
 .drawing-mode-options > button:hover,.coloring-page-options button:hover { transform:translateY(-3px); border-color:#9fc5f3; }
 .drawing-mode-options > button.selected,.coloring-page-options button.selected { border-color:var(--blue); background:var(--sky); box-shadow:inset 0 0 0 2px white; }
 .drawing-mode-options svg { width:150px; height:106px; margin-bottom:4px; }
-.drawing-mode-options svg g { stroke-width:17px; }
+.drawing-mode-options svg g { stroke-width:8px; }
 .drawing-mode-options strong { font:800 20px 'Baloo 2'; }
 .drawing-mode-options small { color:var(--muted); }
 .blank-page-preview { width:145px; height:102px; display:block; position:relative; margin-bottom:8px; border:2px solid var(--line); border-radius:13px; background:white; box-shadow:0 8px 20px rgba(20,65,123,.08); }
@@ -275,7 +275,7 @@ button { cursor:pointer; }
 .coloring-page-options { display:grid; grid-template-columns:repeat(3,1fr); gap:13px; }
 .coloring-page-options button { min-height:190px; padding:12px; border:2px solid var(--line); border-radius:18px; color:var(--navy); background:#fbfdff; transition:.18s ease; }
 .coloring-page-options svg { width:100%; height:135px; }
-.coloring-page-options svg g { stroke-width:13px; }
+.coloring-page-options svg g { stroke-width:7.5px; }
 .coloring-page-options strong { display:block; font:800 18px 'Baloo 2'; }
 .drawing-game-shell { width:min(1280px,calc(100% - 32px)); margin:28px auto 55px; }
 .drawing-game-heading { display:flex; align-items:flex-end; justify-content:space-between; gap:22px; margin-bottom:20px; }
@@ -285,7 +285,7 @@ button { cursor:pointer; }
 .drawing-board-wrap { overflow:hidden; border:1px solid var(--line); border-radius:28px; background:white; box-shadow:var(--shadow); }
 .drawing-board { width:100%; display:block; aspect-ratio:20/13; cursor:crosshair; touch-action:none; user-select:none; }
 .drawing-paper-dots { fill:#e7eef7; pointer-events:none; }
-.coloring-outline { pointer-events:none; }
+.coloring-outline { pointer-events:none; stroke-width:7.5px; }
 .drawing-board-tools { min-height:58px; display:flex; align-items:center; justify-content:space-between; gap:14px; padding:11px 16px; border-top:1px solid var(--line); background:#f8fbff; }
 .drawing-board-tools > span { color:var(--muted); font-size:10px; font-weight:800; }
 .drawing-board-tools > div { display:flex; gap:8px; }

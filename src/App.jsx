@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import { puzzles as starterPuzzles } from "./puzzles";
+import { FluentEmoji } from "./FluentEmoji";
 import { getBuiltInDictionary, getBuiltInWords, WORD_TOPICS } from "./topicWords";
 import { TracingGame, TracingSetup } from "./TracingGame";
 import { LetterFlashGame, LetterFlashSetup, WordFlipGame, WordFlipSetup } from "./FlashcardGames";
@@ -170,13 +171,13 @@ function Dashboard({ onSelectWordGame, onSelectTracing, onSelectLetters, onSelec
             </article>
 
             <article className="game-card featured-game letter-card-game" onClick={onSelectLetters}>
-              <div className="game-visual letter-flash-visual"><span>A</span><div><b>🍎</b><small>APPLE</small></div></div>
+              <div className="game-visual letter-flash-visual"><span>A</span><div><FluentEmoji emoji="🍎" alt="Apple" className="dashboard-emoji" size={72} /><small>APPLE</small></div></div>
               <div className="game-card-body"><div className="card-tags"><span>Alphabet</span><span>Flashcards</span></div><h3>Letter Flashcards</h3><p>Explore A to Z sequentially or in a random order.</p><button className="card-play">Play now <span>→</span></button></div>
             </article>
 
             <article className="game-card featured-game flip-card-game" onClick={onSelectWordFlip}>
-              <div className="game-visual word-flip-visual"><div><span>🐘</span><b>?</b></div><i>↻</i></div>
-              <div className="game-card-body"><div className="card-tags"><span>Vocabulary</span><span>Flip cards</span></div><h3>Word Flip Cards</h3><p>Guess endless emoji words, then flip to reveal each answer.</p><button className="card-play">Play now <span>→</span></button></div>
+              <div className="game-visual word-flip-visual"><div><FluentEmoji emoji="🐘" alt="Elephant" className="dashboard-emoji" size={76} /><b>?</b></div><i>↻</i></div>
+              <div className="game-card-body"><div className="card-tags"><span>Vocabulary</span><span>Flip cards</span></div><h3>Word Flip Cards</h3><p>Guess endless illustrated words, then flip to reveal each answer.</p><button className="card-play">Play now <span>→</span></button></div>
             </article>
           </div>
         </section>
@@ -316,7 +317,7 @@ function GameSetup({ onBack, onStart }) {
         <form onSubmit={submit}>
           <section className="setup-section">
             <div className="setup-section-title"><span>1</span><div><h2>Choose a topic</h2><p>The game instantly shuffles simple English words from this category.</p></div></div>
-            <div className="topic-options">{WORD_TOPICS.map((item) => <button type="button" key={item.id} className={topic === item.id ? "selected" : ""} onClick={() => changeTopic(item.id)} disabled={isGenerating}><span>{item.icon}</span><strong>{item.label}</strong><small>{item.description}</small></button>)}</div>
+            <div className="topic-options">{WORD_TOPICS.map((item) => <button type="button" key={item.id} className={topic === item.id ? "selected" : ""} onClick={() => changeTopic(item.id)} disabled={isGenerating}><FluentEmoji emoji={item.icon} className="topic-emoji" size={34} /><strong>{item.label}</strong><small>{item.description}</small></button>)}</div>
           </section>
 
           <section className="setup-section">
@@ -333,8 +334,8 @@ function GameSetup({ onBack, onStart }) {
           <section className="setup-section">
             <div className="setup-section-title"><span>4</span><div><h2>Choose the pictures</h2><p>Select how the visual clue should appear.</p></div></div>
             <div className="image-options">
-              <label className={imageMode === "included" ? "selected" : ""}><input type="radio" name="imageMode" checked={imageMode === "included"} onChange={() => setImageMode("included")} /><span className="option-icon">🎨</span><span><strong>Instant visual cards</strong><small>Fast and free. Uses the included art or a playful emoji card.</small></span><b>Recommended</b></label>
-              <label className={imageMode === "ai" ? "selected" : ""}><input type="radio" name="imageMode" checked={imageMode === "ai"} onChange={() => setImageMode("ai")} /><span className="option-icon">✨</span><span><strong>AI-generated images</strong><small>Created with Cloudflare Workers AI and reused from the cache when available.</small></span></label>
+              <label className={imageMode === "included" ? "selected" : ""}><input type="radio" name="imageMode" checked={imageMode === "included"} onChange={() => setImageMode("included")} /><FluentEmoji emoji="🎨" className="option-icon" size={30} /><span><strong>Instant visual cards</strong><small>Fast and free. Uses consistent Microsoft Fluent Emoji artwork.</small></span><b>Recommended</b></label>
+              <label className={imageMode === "ai" ? "selected" : ""}><input type="radio" name="imageMode" checked={imageMode === "ai"} onChange={() => setImageMode("ai")} /><FluentEmoji emoji="✨" className="option-icon" size={30} /><span><strong>AI-generated images</strong><small>Created with Cloudflare Workers AI and reused from the cache when available.</small></span></label>
             </div>
           </section>
 
@@ -448,7 +449,7 @@ function Game({ gamePuzzles, imageMode, onExit }) {
         <section className="game-left">
           <div className="puzzle-label-top"><span className="label-badge">{currentIdx + 1} / {gamePuzzles.length}</span><span className="label-text">Which word matches the clue?</span></div>
           <div className="image-card">
-            {displayImage ? <Image src={displayImage} alt="Visual clue for this word" className="puzzle-img" fill sizes="(max-width: 850px) 100vw, 52vw" unoptimized /> : loadingImages[puzzle.id] ? <div className="generating-scene"><span className="sparkle-loader">✦</span><strong>AI is drawing…</strong><small>This can take up to two minutes.</small></div> : <div className="emoji-scene"><div className="emoji-big">{puzzle.emoji}</div>{imageErrors[puzzle.id] && <small className="image-error">AI unavailable—we used the visual card instead.</small>}</div>}
+            {displayImage ? <Image src={displayImage} alt="Visual clue for this word" className="puzzle-img" fill sizes="(max-width: 850px) 100vw, 52vw" unoptimized /> : loadingImages[puzzle.id] ? <div className="generating-scene"><span className="sparkle-loader">✦</span><strong>AI is drawing…</strong><small>This can take up to two minutes.</small></div> : <div className="emoji-scene"><FluentEmoji emoji={puzzle.emoji} alt={puzzle.emojiLabel} className="emoji-big" size={240} />{imageErrors[puzzle.id] && <small className="image-error">AI unavailable—we used the visual card instead.</small>}</div>}
             {status === "correct" && <div className="image-overlay-win"><div className="win-check">✓</div><div className="win-label">{puzzle.answer}</div></div>}
           </div>
           <p className="puzzle-desc">{puzzle.description}</p>
@@ -457,15 +458,15 @@ function Game({ gamePuzzles, imageMode, onExit }) {
 
         <section className="game-right">
           <div className="right-section"><div className="section-label">Fill in the blanks</div><div className={`slots-row ${puzzle.answer.length > 10 ? "slots-compact" : ""}`}>{slots.map((slot) => <button key={slot.index} className={`slot ${slot.letter ? "slot-filled" : "slot-empty"} ${slot.locked ? "slot-locked" : ""} ${slot.wrong ? "slot-wrong" : ""} ${status === "correct" ? "slot-win" : ""}`} onClick={() => handleSlotClick(slot)}>{slot.letter || ""}</button>)}</div><div className="slot-hint-text">Yellow tiles are free letters • Click a placed letter to remove it</div></div>
-          {status === "correct" && <div className="status-correct">🌟 Correct! Great job! 🌟</div>}
-          {showHint && <div className="hint-box">💡 {puzzle.hint}</div>}
+          {status === "correct" && <div className="status-correct"><FluentEmoji emoji="🌟" className="inline-emoji" size={28} /> Correct! Great job! <FluentEmoji emoji="🌟" className="inline-emoji" size={28} /></div>}
+          {showHint && <div className="hint-box"><FluentEmoji emoji="💡" className="inline-emoji" size={28} /> {puzzle.hint}</div>}
           <div className="right-section"><div className="section-label">Choose a letter</div><div className="pool-row">{pool.map((item) => <button key={item.id} className={`pool-btn ${item.used ? "pool-used" : ""}`} onClick={() => handlePoolClick(item)} disabled={item.used || status === "correct"}>{item.letter}</button>)}</div></div>
           <div className="actions"><button className="btn-action btn-clear" onClick={clearAnswer} disabled={status === "correct"}>Clear</button><button className="btn-action btn-hint" onClick={() => setShowHint((current) => !current)}>{showHint ? "Hide clue" : "Show clue"}</button>{status === "correct" && <button className="btn-action btn-next" onClick={() => currentIdx < gamePuzzles.length - 1 ? goTo(currentIdx + 1) : setShowComplete(true)}>{currentIdx < gamePuzzles.length - 1 ? "Next →" : "Finish"}</button>}</div>
           <div className="nav-arrows mobile-nav"><button className="nav-btn" onClick={() => goTo(currentIdx - 1)} disabled={!currentIdx}>← Previous</button><button className="nav-btn" onClick={() => goTo(currentIdx + 1)} disabled={currentIdx === gamePuzzles.length - 1}>Next →</button></div>
         </section>
       </main>
 
-      {showComplete && <div className="modal-overlay"><div className="modal"><div className="modal-trophy">🏆</div><span className="eyebrow">GAME COMPLETE</span><h2>Excellent work!</h2><p>You completed {completedIds.length} out of {gamePuzzles.length} words.</p><div className="result-score"><strong>{completedIds.length}</strong><span>correct answers</span></div><div className="modal-actions"><button className="secondary-button" onClick={onExit}>Games</button><button className="primary-button" onClick={() => { setShowComplete(false); setCurrentIdx(0); setCompletedIds([]); }}>Play again</button></div></div></div>}
+      {showComplete && <div className="modal-overlay"><div className="modal"><FluentEmoji emoji="🏆" alt="Trophy" className="modal-trophy" size={84} /><span className="eyebrow">GAME COMPLETE</span><h2>Excellent work!</h2><p>You completed {completedIds.length} out of {gamePuzzles.length} words.</p><div className="result-score"><strong>{completedIds.length}</strong><span>correct answers</span></div><div className="modal-actions"><button className="secondary-button" onClick={onExit}>Games</button><button className="primary-button" onClick={() => { setShowComplete(false); setCurrentIdx(0); setCompletedIds([]); }}>Play again</button></div></div></div>}
     </div>
   );
 }

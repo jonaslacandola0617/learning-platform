@@ -106,7 +106,7 @@ export function LetterFlashGame({ brand, mode, onExit }) {
         <div className="flash-stage-heading"><div><span className="eyebrow">LETTER FLASHCARDS</span><h1>{mode === "sequential" ? `${index + 1} of 26` : "Random letters"}</h1></div><button className={`autoplay-button ${autoPlay ? "playing" : ""}`} onClick={() => setAutoPlay((current) => !current)}>{autoPlay ? "Ⅱ Pause" : "▶ Auto play"}</button></div>
         <section className="letter-flash-card" aria-live="polite">
           <div className="letter-display">{card.letter}</div>
-          <div className="letter-example"><FluentEmoji emoji={card.emoji} alt={card.word} className="letter-card-emoji" size={190} /><strong>{card.word}</strong><small>{card.letter} is for {card.word}</small></div>
+          <div className="letter-example"><FluentEmoji emoji={card.emoji} name={card.word} alt={card.word} className="letter-card-emoji" size={190} /><strong>{card.word}</strong><small>{card.letter} is for {card.word}</small></div>
         </section>
         <div className="flash-card-navigation">
           {mode === "sequential" && <button className="secondary-button" onClick={() => setIndex((current) => (current - 1 + LETTER_CARDS.length) % LETTER_CARDS.length)}>← Previous</button>}
@@ -189,7 +189,7 @@ export function WordFlipGame({ brand, topic, onExit }) {
         <div className="flash-stage-heading"><div><span className="eyebrow">WORD FLIP CARDS</span><h1>What word is this?</h1><p>Guess from the illustration, then tap the card to check.</p></div>{generationStatus && <span className="batch-status">{generationStatus}</span>}</div>
         <button className={`word-flip-card ${flipped ? "flipped" : ""}`} onClick={() => setFlipped((current) => !current)} aria-label={flipped ? `Answer: ${card.answer}. Tap to see the illustration.` : "Tap to reveal the answer"}>
           <span className="flip-card-inner">
-            <span className="flip-card-face flip-card-front"><FluentEmoji key={`${card.answer}:${card.emoji}`} emoji={card.emoji} alt={card.answer} className="flip-card-emoji" size={330} /><small>Tap to reveal</small></span>
+            <span className="flip-card-face flip-card-front"><FluentEmoji key={`${card.answer}:${card.emoji}`} emoji={card.emoji} name={card.answer} alt={card.answer} className="flip-card-emoji" size={330} /><small>Tap to reveal</small></span>
             <span className="flip-card-face flip-card-back"><small>The answer is</small><strong>{card.answer}</strong><p>{card.hint}</p><em>Tap to see the illustration</em></span>
           </span>
         </button>

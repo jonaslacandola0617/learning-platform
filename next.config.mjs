@@ -11,8 +11,8 @@ const nextConfig = {
       },
       {
         protocol: "https",
-        hostname: "emoji.fluent-cdn.com",
-        pathname: "/1.0.0/100x100/**",
+        hostname: "raw.githubusercontent.com",
+        pathname: "/microsoft/fluentui-emoji/62ecdc0d7ca5c6df32148c169556bc8d3782fca4/**",
       },
     ],
   },

@@ -7,6 +7,7 @@ import { FluentEmoji } from "./FluentEmoji";
 import { getBuiltInDictionary, getBuiltInWords, WORD_TOPICS } from "./topicWords";
 import { TracingGame, TracingSetup } from "./TracingGame";
 import { LetterFlashGame, LetterFlashSetup, WordFlipGame, WordFlipSetup } from "./FlashcardGames";
+import { DrawingGame, DrawingSetup } from "./DrawingGame";
 
 const EXTRA_LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
 const IMAGE_PROMPT_VERSION = "2";
@@ -127,7 +128,7 @@ function Brand({ compact = false }) {
   );
 }
 
-function Dashboard({ onSelectWordGame, onSelectTracing, onSelectLetters, onSelectWordFlip }) {
+function Dashboard({ onSelectWordGame, onSelectTracing, onSelectLetters, onSelectWordFlip, onSelectDrawing }) {
   return (
     <div className="platform-page">
       <nav className="platform-nav">
@@ -153,7 +154,7 @@ function Dashboard({ onSelectWordGame, onSelectTracing, onSelectLetters, onSelec
         </section>
 
         <section className="games-section">
-          <div className="section-heading"><div><span className="eyebrow">GAMES</span><h2>What would you like to play?</h2></div><span className="game-count">4 games available</span></div>
+          <div className="section-heading"><div><span className="eyebrow">GAMES</span><h2>What would you like to play?</h2></div><span className="game-count">5 games available</span></div>
           <div className="game-grid">
             <article className="game-card featured-game" onClick={onSelectWordGame}>
               <div className="game-visual word-visual"><span className="letter-tile">M</span><span className="letter-tile">A</span><span className="letter-tile">B</span><span className="letter-tile">A</span><span className="letter-tile">I</span></div>
@@ -178,6 +179,11 @@ function Dashboard({ onSelectWordGame, onSelectTracing, onSelectLetters, onSelec
             <article className="game-card featured-game flip-card-game" onClick={onSelectWordFlip}>
               <div className="game-visual word-flip-visual"><div><FluentEmoji emoji="🐘" name="Elephant" alt="Elephant" className="dashboard-emoji" size={76} /><b>?</b></div><i>↻</i></div>
               <div className="game-card-body"><div className="card-tags"><span>Vocabulary</span><span>Flip cards</span></div><h3>Word Flip Cards</h3><p>Guess endless illustrated words, then flip to reveal each answer.</p><button className="card-play">Play now <span>→</span></button></div>
+            </article>
+
+            <article className="game-card featured-game drawing-game-card" onClick={onSelectDrawing}>
+              <div className="game-visual drawing-visual"><span className="drawing-card-paper"><i /><i /><i /><b>✎</b></span><span className="drawing-card-palette"><i /><i /><i /><i /></span></div>
+              <div className="game-card-body"><div className="card-tags"><span>Creativity</span><span>Coloring</span></div><h3>Draw &amp; Color</h3><p>Draw freely or color friendly animals and objects with 16 colors.</p><button className="card-play">Play now <span>→</span></button></div>
             </article>
           </div>
         </section>
@@ -478,6 +484,7 @@ export default function App() {
   const [traceSession, setTraceSession] = useState(null);
   const [letterMode, setLetterMode] = useState("sequential");
   const [flipTopic, setFlipTopic] = useState("mixed");
+  const [drawingSelection, setDrawingSelection] = useState({ mode: "free", templateId: null });
   const app = useMemo(() => {
     if (screen === "setup") return <GameSetup onBack={() => setScreen("dashboard")} onStart={(nextPuzzles, mode) => { setGamePuzzles(nextPuzzles); setImageMode(mode); setScreen("game"); }} />;
     if (screen === "game") return <Game gamePuzzles={gamePuzzles} imageMode={imageMode} onExit={() => setScreen("dashboard")} />;
@@ -487,7 +494,9 @@ export default function App() {
     if (screen === "letter-game") return <LetterFlashGame brand={<Brand compact />} mode={letterMode} onExit={() => setScreen("dashboard")} />;
     if (screen === "flip-setup") return <WordFlipSetup brand={<Brand compact />} onBack={() => setScreen("dashboard")} onStart={(topic) => { setFlipTopic(topic); setScreen("flip-game"); }} />;
     if (screen === "flip-game") return <WordFlipGame brand={<Brand compact />} topic={flipTopic} onExit={() => setScreen("dashboard")} />;
-    return <Dashboard onSelectWordGame={() => setScreen("setup")} onSelectTracing={() => setScreen("tracing-setup")} onSelectLetters={() => setScreen("letter-setup")} onSelectWordFlip={() => setScreen("flip-setup")} />;
-  }, [screen, gamePuzzles, imageMode, traceSession, letterMode, flipTopic]);
+    if (screen === "drawing-setup") return <DrawingSetup brand={<Brand compact />} onBack={() => setScreen("dashboard")} onStart={(selection) => { setDrawingSelection(selection); setScreen("drawing-game"); }} />;
+    if (screen === "drawing-game") return <DrawingGame brand={<Brand compact />} selection={drawingSelection} onExit={() => setScreen("dashboard")} />;
+    return <Dashboard onSelectWordGame={() => setScreen("setup")} onSelectTracing={() => setScreen("tracing-setup")} onSelectLetters={() => setScreen("letter-setup")} onSelectWordFlip={() => setScreen("flip-setup")} onSelectDrawing={() => setScreen("drawing-setup")} />;
+  }, [screen, gamePuzzles, imageMode, traceSession, letterMode, flipTopic, drawingSelection]);
   return app;
 }

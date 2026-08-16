@@ -1,5 +1,6 @@
 import "../src/App.css";
 import "../src/FullscreenMode.css";
+import "../src/DrawingWorkspace.css";
 import { FullscreenMode } from "../src/FullscreenMode";
 import { siteUrl } from "../src/site";
 

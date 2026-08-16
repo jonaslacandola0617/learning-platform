@@ -46,7 +46,7 @@ export function FullscreenMode({ children }) {
   const [notice, setNotice] = useState("");
 
   const syncDashboardTarget = useCallback(() => {
-    setDashboardTarget(document.querySelector(".dashboard-shell .welcome-copy"));
+    setDashboardTarget(document.querySelector(".platform-nav .nav-profile"));
   }, []);
 
   useEffect(() => {
@@ -99,7 +99,7 @@ export function FullscreenMode({ children }) {
         <span className="dashboard-fullscreen-icon" aria-hidden="true">⛶</span>
         <span>
           <strong>{isFullscreen ? "Exit full screen" : "Full screen"}</strong>
-          <small>{isFullscreen ? "Return to browser view" : "Use more space for learning"}</small>
+          <small>{isFullscreen ? "Return to browser view" : "Use more space"}</small>
         </span>
       </button>
       {notice && <span className="dashboard-fullscreen-notice" role="status">{notice}</span>}

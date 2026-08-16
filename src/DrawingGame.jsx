@@ -120,7 +120,7 @@ export function DrawingSetup({ onBack, onStart, brand }) {
   );
 }
 
-function DrawingCanvas({ color, strokeWidth, template, backgroundUrl, backgroundLabel, erasing, strokes, setStrokes, loading, error }) {
+function DrawingCanvas({ color, strokeWidth, template, backgroundUrl, backgroundLabel, erasing, strokes, setStrokes, loading, error, onUndo, onClear, pdfNote }) {
   const svgRef = useRef(null);
   const activePointerId = useRef(null);
   const activeStroke = useRef(null);
@@ -175,8 +175,8 @@ function DrawingCanvas({ color, strokeWidth, template, backgroundUrl, background
   }
 
   return (
-    <div className="drawing-board-wrap drawing-board-wrap-wide">
-      <svg ref={svgRef} className={`drawing-board drawing-board-large ${erasing ? "is-erasing" : ""}`} viewBox="0 0 800 520" role="img" aria-label={backgroundLabel || (template ? `${template.label} coloring page` : "Blank drawing pad")} onPointerDown={beginStroke} onPointerMove={moveStroke} onPointerUp={endStroke} onPointerCancel={endStroke} onLostPointerCapture={endStroke}>
+    <div className="drawing-board-wrap">
+      <svg ref={svgRef} className={`drawing-board ${erasing ? "is-erasing" : ""}`} viewBox="0 0 800 520" role="img" aria-label={backgroundLabel || (template ? `${template.label} coloring page` : "Blank drawing pad")} onPointerDown={beginStroke} onPointerMove={moveStroke} onPointerUp={endStroke} onPointerCancel={endStroke} onLostPointerCapture={endStroke}>
         <rect width="800" height="520" rx="18" fill="#ffffff" />
         {backgroundUrl && <image href={backgroundUrl} x="0" y="0" width="800" height="520" preserveAspectRatio="xMidYMid meet" />}
         {!template && !backgroundUrl && <g className="drawing-paper-dots">{Array.from({ length: 10 }, (_, row) => Array.from({ length: 15 }, (_, column) => <circle key={`${row}-${column}`} cx={50 + column * 50} cy={38 + row * 50} r="2" />))}</g>}
@@ -184,6 +184,7 @@ function DrawingCanvas({ color, strokeWidth, template, backgroundUrl, background
         <TemplateArt template={template} className="coloring-outline" />
       </svg>
       {(loading || error) && <div className={`worksheet-board-status ${error ? "is-error" : ""}`}>{error || "Preparing worksheet…"}</div>}
+      <div className="drawing-board-tools"><span>Only the finger that starts a stroke can control it.{pdfNote ? ` ${pdfNote}` : ""}</span><div><button onClick={onUndo} disabled={!strokes.length}>↶ Undo</button><button onClick={onClear} disabled={!strokes.length}>Clear all</button></div></div>
     </div>
   );
 }
@@ -320,20 +321,20 @@ export function DrawingGame({ selection, onExit, brand }) {
   return (
     <div className="game-page drawing-game-page">
       <header className="game-header"><button className="game-home" onClick={onExit}>← Games</button>{brand}<div className="header-score"><strong>{strokes.length}</strong><span>strokes</span></div></header>
-      <main className="drawing-game-shell drawing-game-shell-wide">
+      <main className="drawing-game-shell">
         <section className="drawing-game-heading"><div><span className="eyebrow">{uploadMode ? "WORKSHEET" : template ? "COLORING PAGE" : "DRAWING PAD"}</span><h1>{title}</h1><p>{uploadMode ? "Your file stays local. Draw over it without changing the original." : "Use one finger, a stylus, or a mouse. Choose from 16 colors and adjust the brush anytime."}</p></div>{uploadMode && <button className="secondary-button" type="button" onClick={() => replaceInputRef.current?.click()}>Replace file</button>}</section>
 
         <input ref={replaceInputRef} className="worksheet-file-input" type="file" accept={FILE_ACCEPT} onChange={(event) => replaceFile(event.target.files?.[0])} />
 
-        <div className="drawing-toolbar" aria-label="Drawing tools">
-          <div className="drawing-toolbar-group drawing-toolbar-colors"><span className="drawing-toolbar-label">Colors</span><div className="drawing-color-grid drawing-color-grid-toolbar">{COLORS.map((choice) => <button key={choice.value} aria-label={`Use ${choice.name}`} title={choice.name} className={!erasing && color === choice.value ? "selected" : ""} style={{ "--draw-color": choice.value }} onClick={() => { setColor(choice.value); setErasing(false); }} />)}</div></div>
-          <div className="drawing-toolbar-group drawing-toolbar-brush"><label className="drawing-toolbar-label" htmlFor="brush-size">Brush <strong>{strokeWidth}px</strong></label><input id="brush-size" type="range" min="4" max="40" step="2" value={strokeWidth} onChange={(event) => setStrokeWidth(Number(event.target.value))} /><i className="drawing-toolbar-brush-dot" style={{ width: Math.min(28, strokeWidth), height: Math.min(28, strokeWidth), background: color }} /></div>
-          <div className="drawing-toolbar-group drawing-toolbar-actions"><button className={`tool-button ${erasing ? "selected" : ""}`} aria-pressed={erasing} onClick={() => setErasing((current) => !current)}>⌫ {erasing ? "Eraser on" : "Eraser"}</button><button className="tool-button" onClick={undo} disabled={!strokes.length}>↶ Undo</button><button className="tool-button" onClick={clearCurrent} disabled={!strokes.length}>Clear marks</button></div>
-          {pdfMode && <div className="drawing-toolbar-group pdf-page-controls"><button className="tool-button" onClick={() => setPdfPage((page) => Math.max(1, page - 1))} disabled={pdfPage <= 1}>←</button><span><strong>{pdfPage}</strong> / {pdfPageCount || "…"}</span><button className="tool-button" onClick={() => setPdfPage((page) => Math.min(pdfPageCount, page + 1))} disabled={!pdfPageCount || pdfPage >= pdfPageCount}>→</button></div>}
+        <div className="drawing-workspace">
+          <DrawingCanvas color={color} strokeWidth={strokeWidth} template={template} backgroundUrl={uploadMode ? backgroundUrl : ""} backgroundLabel={uploadMode ? (pdfMode ? `${workingFile?.name}, page ${pdfPage}` : workingFile?.name) : ""} erasing={erasing} strokes={strokes} setStrokes={setCurrentStrokes} loading={worksheetLoading} error={worksheetError} onUndo={undo} onClear={clearCurrent} pdfNote={pdfMode ? "Marks are kept separately for each PDF page." : ""} />
+          <aside className="drawing-controls">
+            <div className="drawing-tool-section"><span>16 colors</span><div className="drawing-color-grid">{COLORS.map((choice) => <button key={choice.value} aria-label={`Use ${choice.name}`} title={choice.name} className={!erasing && color === choice.value ? "selected" : ""} style={{ "--draw-color": choice.value }} onClick={() => { setColor(choice.value); setErasing(false); }} />)}</div></div>
+            <div className="drawing-tool-section brush-size-control"><label htmlFor="brush-size">Brush size <strong>{strokeWidth}px</strong></label><input id="brush-size" type="range" min="4" max="40" step="2" value={strokeWidth} onChange={(event) => setStrokeWidth(Number(event.target.value))} /><div className="brush-preview"><i style={{ width: strokeWidth, height: strokeWidth }} /></div></div>
+            <button className={`eraser-button ${erasing ? "selected" : ""}`} aria-pressed={erasing} onClick={() => setErasing((current) => !current)}>▱ {erasing ? "Eraser on" : "Use eraser"}</button>
+            {pdfMode && <div className="drawing-tool-section pdf-sidebar-section"><span>PDF page</span><div className="pdf-sidebar-controls"><button onClick={() => setPdfPage((page) => Math.max(1, page - 1))} disabled={pdfPage <= 1}>←</button><strong>{pdfPage} / {pdfPageCount || "…"}</strong><button onClick={() => setPdfPage((page) => Math.min(pdfPageCount, page + 1))} disabled={!pdfPageCount || pdfPage >= pdfPageCount}>→</button></div></div>}
+          </aside>
         </div>
-
-        <DrawingCanvas color={color} strokeWidth={strokeWidth} template={template} backgroundUrl={uploadMode ? backgroundUrl : ""} backgroundLabel={uploadMode ? (pdfMode ? `${workingFile?.name}, page ${pdfPage}` : workingFile?.name) : ""} erasing={erasing} strokes={strokes} setStrokes={setCurrentStrokes} loading={worksheetLoading} error={worksheetError} />
-        <div className="drawing-workspace-note"><span>Only the finger that starts a stroke can control it.</span>{pdfMode && <span>Your marks are kept separately for each PDF page.</span>}</div>
       </main>
     </div>
   );

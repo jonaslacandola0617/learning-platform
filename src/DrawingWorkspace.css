@@ -81,157 +81,18 @@
   font-weight: 800;
 }
 
-.drawing-game-shell-wide {
-  width: min(1540px, calc(100% - 32px));
-  margin: 28px auto 56px;
-}
-
-.drawing-game-shell-wide .drawing-game-heading {
-  max-width: 1220px;
-}
-
-.drawing-toolbar {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  flex-wrap: wrap;
-  margin-bottom: 14px;
-  padding: 13px 14px;
-  border: 1px solid var(--line);
-  border-radius: 18px;
-  background: rgba(255,255,255,.96);
-  box-shadow: 0 8px 26px rgba(20,65,123,.07);
-}
-
-.drawing-toolbar-group {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  min-height: 42px;
-}
-
-.drawing-toolbar-group + .drawing-toolbar-group {
-  padding-left: 14px;
-  border-left: 1px solid var(--line);
-}
-
-.drawing-toolbar-label {
-  flex: 0 0 auto;
-  color: var(--muted);
-  font-size: 10px;
-  font-weight: 900;
-  letter-spacing: .65px;
-  text-transform: uppercase;
-}
-
-.drawing-toolbar-label strong {
-  color: var(--navy);
-}
-
-.drawing-toolbar-colors {
-  flex: 1 1 520px;
-}
-
-.drawing-color-grid-toolbar {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  flex-wrap: wrap;
-}
-
-.drawing-color-grid-toolbar button {
-  width: 30px;
-  height: 30px;
-  border-width: 3px;
-}
-
-.drawing-toolbar-brush {
-  flex: 0 1 280px;
-}
-
-.drawing-toolbar-brush input[type="range"] {
-  width: 145px;
-  accent-color: var(--blue);
-}
-
-.drawing-toolbar-brush-dot {
-  flex: 0 0 auto;
-  display: block;
-  border-radius: 50%;
-  box-shadow: 0 0 0 1px rgba(16,36,82,.18);
-}
-
-.drawing-toolbar-actions {
-  margin-left: auto;
-}
-
-.tool-button {
-  min-height: 38px;
-  border: 1px solid var(--line);
-  border-radius: 11px;
-  padding: 8px 12px;
-  color: var(--blue);
-  background: #fff;
-  font-size: 11px;
-  font-weight: 900;
-  white-space: nowrap;
-}
-
-.tool-button:hover:not(:disabled) {
-  border-color: #9ebce0;
-  background: var(--sky);
-}
-
-.tool-button.selected {
-  border-color: var(--blue);
-  color: #fff;
-  background: var(--blue);
-}
-
-.tool-button:disabled {
-  cursor: default;
-  opacity: .38;
-}
-
-.pdf-page-controls {
-  flex: 0 0 auto;
-}
-
-.pdf-page-controls span {
-  min-width: 58px;
-  text-align: center;
-  color: var(--muted);
-  font-size: 11px;
-  font-weight: 800;
-}
-
-.pdf-page-controls strong {
-  color: var(--navy);
-}
-
-.drawing-board-wrap-wide {
+.drawing-board-wrap {
   position: relative;
-  width: 100%;
-  overflow: hidden;
-  border-radius: 24px;
 }
 
-.drawing-board-large {
-  width: 100%;
-  height: auto;
-  display: block;
-  aspect-ratio: 20 / 13;
-  background: #fff;
-}
-
-.drawing-board-large.is-erasing {
+.drawing-board.is-erasing {
   cursor: cell;
 }
 
 .worksheet-board-status {
   position: absolute;
-  inset: 0;
+  inset: 0 0 58px;
+  z-index: 4;
   display: grid;
   place-items: center;
   padding: 28px;
@@ -247,41 +108,51 @@
   color: var(--red);
 }
 
-.drawing-workspace-note {
-  display: flex;
-  justify-content: space-between;
-  gap: 16px;
-  padding: 10px 4px 0;
-  color: var(--muted);
-  font-size: 10px;
-  font-weight: 800;
+.pdf-sidebar-section {
+  padding-bottom: 0;
+  border-bottom: 0;
+}
+
+.pdf-sidebar-controls {
+  display: grid;
+  grid-template-columns: 40px minmax(72px, 1fr) 40px;
+  align-items: center;
+  gap: 7px;
+}
+
+.pdf-sidebar-controls strong {
+  text-align: center;
+  color: var(--navy);
+  font-size: 12px;
+}
+
+.pdf-sidebar-controls button {
+  min-height: 36px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  color: var(--blue);
+  background: #f8fbff;
+  font-weight: 900;
+}
+
+.pdf-sidebar-controls button:disabled {
+  cursor: default;
+  opacity: .4;
 }
 
 @media (max-width: 1050px) {
   .drawing-mode-options-four {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
+}
 
-  .drawing-toolbar-colors {
-    flex-basis: 100%;
-  }
-
-  .drawing-toolbar-group:nth-child(2) {
-    padding-left: 0;
-    border-left: 0;
-  }
-
-  .drawing-toolbar-actions {
-    margin-left: 0;
+@media (max-width: 850px) {
+  .pdf-sidebar-section {
+    min-width: 190px;
   }
 }
 
-@media (max-width: 700px) {
-  .drawing-game-shell-wide {
-    width: min(100% - 16px, 1540px);
-    margin-top: 16px;
-  }
-
+@media (max-width: 600px) {
   .drawing-mode-options-four {
     grid-template-columns: 1fr;
   }
@@ -295,61 +166,11 @@
     width: 100%;
   }
 
-  .drawing-toolbar {
-    align-items: stretch;
-    gap: 10px;
-    padding: 11px;
+  .pdf-sidebar-section {
+    min-width: 0;
   }
 
-  .drawing-toolbar-group,
-  .drawing-toolbar-colors,
-  .drawing-toolbar-brush,
-  .drawing-toolbar-actions,
-  .pdf-page-controls {
-    width: 100%;
-    flex: 1 1 100%;
-    padding: 0 !important;
-    border-left: 0 !important;
-  }
-
-  .drawing-toolbar-colors {
-    align-items: flex-start;
-    flex-direction: column;
-  }
-
-  .drawing-color-grid-toolbar {
-    width: 100%;
-  }
-
-  .drawing-color-grid-toolbar button {
-    width: 29px;
-    height: 29px;
-  }
-
-  .drawing-toolbar-brush input[type="range"] {
-    flex: 1;
-    min-width: 100px;
-  }
-
-  .drawing-toolbar-actions {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-  }
-
-  .pdf-page-controls {
-    justify-content: center;
-  }
-
-  .drawing-board-wrap-wide {
-    border-radius: 17px;
-  }
-
-  .drawing-board-large {
-    min-height: 410px;
-  }
-
-  .drawing-workspace-note {
-    flex-direction: column;
-    gap: 4px;
+  .worksheet-board-status {
+    inset: 0 0 68px;
   }
 }

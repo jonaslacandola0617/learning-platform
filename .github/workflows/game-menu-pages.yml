@@ -1,0 +1,43 @@
+name: Build game menu pages
+
+on:
+  push:
+    branches:
+      - feature/game-menu-pages
+
+permissions:
+  contents: write
+
+jobs:
+  patch-and-build:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout branch
+        uses: actions/checkout@v4
+        with:
+          ref: feature/game-menu-pages
+          fetch-depth: 0
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Apply game menu page refactor
+        run: node scripts/patch-game-menu-pages.mjs
+
+      - name: Build
+        run: npm run build
+
+      - name: Commit generated source changes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add src/App.jsx src/GameMenu.module.css 'app/games/[game]/page.jsx'
+          git commit -m "feat: add dedicated game menu pages"
+          git push origin feature/game-menu-pages

@@ -1,7 +1,9 @@
 "use client";
 
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
+import styles from "./GameMenu.module.css";
 import { puzzles as starterPuzzles } from "./puzzles";
 import { FluentEmoji } from "./FluentEmoji";
 import { getBuiltInDictionary, getBuiltInWords, WORD_TOPICS } from "./topicWords";
@@ -13,6 +15,84 @@ const EXTRA_LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
 const IMAGE_PROMPT_VERSION = "2";
 const WORD_CACHE_KEY = "tuklas.generated-word-cache.v1";
 const MAX_CACHED_WORDS_PER_TOPIC = 105;
+
+const GAME_PAGES = {
+  "guess-the-word": {
+    eyebrow: "VOCABULARY GAME",
+    title: "Guess the Word",
+    description: "Build the correct word from a visual clue, a short hint, and a playful letter bank.",
+    cta: "Set up word game",
+    emoji: "🧩",
+    emojiName: "Puzzle pieces",
+    theme: "word",
+    setupScreen: "setup",
+    highlights: [
+      ["Choose a topic", "Animals, actions, objects, adjectives, and good values."],
+      ["Pick the length", "Play 5, 10, or 15 word rounds."],
+      ["Use your library", "Shuffle saved words or generate a new set when needed."],
+    ],
+  },
+  tracing: {
+    eyebrow: "WRITING PRACTICE",
+    title: "Tracing Practice",
+    description: "Practice controlled strokes with patterns, letters, and numbers using a finger, stylus, or mouse.",
+    cta: "Choose tracing practice",
+    emoji: "✏️",
+    emojiName: "Pencil",
+    theme: "trace",
+    setupScreen: "tracing-setup",
+    highlights: [
+      ["Patterns", "Straight, curved, loopy, wavy, and zigzag paths."],
+      ["Letters", "Work through alphabet tracing one level at a time."],
+      ["Numbers", "Build number-writing confidence with guided practice."],
+    ],
+  },
+  "letter-flashcards": {
+    eyebrow: "ALPHABET GAME",
+    title: "Letter Flashcards",
+    description: "Explore letters A to Z with friendly illustrated examples in sequential or shuffled order.",
+    cta: "Choose flashcard mode",
+    emoji: "🔤",
+    emojiName: "Alphabet letters",
+    theme: "letters",
+    setupScreen: "letter-setup",
+    highlights: [
+      ["A to Z", "Move through the alphabet in a clear learning sequence."],
+      ["Random mode", "Shuffle the deck for quick recognition practice."],
+      ["Visual examples", "Pair every letter with a familiar illustrated word."],
+    ],
+  },
+  "word-flip-cards": {
+    eyebrow: "VOCABULARY CARDS",
+    title: "Word Flip Cards",
+    description: "Look at an illustration, make a guess, then flip the card to reveal the word and keep going.",
+    cta: "Choose a word topic",
+    emoji: "🃏",
+    emojiName: "Playing card",
+    theme: "flip",
+    setupScreen: "flip-setup",
+    highlights: [
+      ["Look first", "Use the visual before revealing the answer."],
+      ["Flip to check", "Reveal each word only when you are ready."],
+      ["Keep practicing", "Continue through a flowing set of vocabulary cards."],
+    ],
+  },
+  "draw-color": {
+    eyebrow: "CREATIVE PLAY",
+    title: "Draw & Color",
+    description: "Use the large drawing board for free drawing, coloring templates, or writing directly over an uploaded worksheet.",
+    cta: "Choose drawing mode",
+    emoji: "🎨",
+    emojiName: "Artist palette",
+    theme: "drawing",
+    setupScreen: "drawing-setup",
+    highlights: [
+      ["Draw freely", "Sketch on a large canvas with adjustable strokes and 16 colors."],
+      ["Color pictures", "Pick friendly objects and animals to color."],
+      ["Use worksheets", "Open an image or PDF and draw over it without changing the original file."],
+    ],
+  },
+};
 
 function shuffle(items) {
   const copy = [...items];
@@ -185,6 +265,53 @@ function Dashboard({ onSelectWordGame, onSelectTracing, onSelectLetters, onSelec
               <div className="game-visual drawing-visual"><span className="drawing-card-paper"><i /><i /><i /><b>✎</b></span><span className="drawing-card-palette"><i /><i /><i /><i /></span></div>
               <div className="game-card-body"><div className="card-tags"><span>Creativity</span><span>Coloring</span></div><h3>Draw &amp; Color</h3><p>Draw freely or color friendly animals and objects with 16 colors.</p><button className="card-play">Play now <span>→</span></button></div>
             </article>
+          </div>
+        </section>
+      </main>
+    </div>
+  );
+}
+
+
+function GameMenu({ game, onBack, onStart }) {
+  return (
+    <div className={`platform-page ${styles.menuPage}`}>
+      <nav className="platform-nav">
+        <button className="back-link" onClick={onBack}>← Dashboard</button>
+        <Brand compact />
+        <span className="nav-step">Game menu</span>
+      </nav>
+
+      <main className={styles.shell}>
+        <section className={styles.hero}>
+          <div className={styles.copy}>
+            <span className="eyebrow">{game.eyebrow}</span>
+            <h1>{game.title}</h1>
+            <p>{game.description}</p>
+            <button className="primary-button" onClick={onStart}>{game.cta} <span>→</span></button>
+          </div>
+
+          <div className={`${styles.visual} ${styles[game.theme]}`} aria-hidden="true">
+            <span className={styles.visualRing} />
+            <FluentEmoji emoji={game.emoji} name={game.emojiName} alt="" className={styles.menuEmoji} size={178} />
+            <span className={styles.sparkOne}>✦</span>
+            <span className={styles.sparkTwo}>★</span>
+          </div>
+        </section>
+
+        <section className={styles.infoSection}>
+          <div className={styles.infoHeading}>
+            <span className="eyebrow">BEFORE YOU PLAY</span>
+            <h2>What you can do</h2>
+          </div>
+          <div className={styles.infoGrid}>
+            {game.highlights.map(([title, description], index) => (
+              <article className={styles.infoCard} key={title}>
+                <span className={styles.infoNumber}>{String(index + 1).padStart(2, "0")}</span>
+                <h3>{title}</h3>
+                <p>{description}</p>
+              </article>
+            ))}
           </div>
         </section>
       </main>
@@ -477,8 +604,10 @@ function Game({ gamePuzzles, imageMode, onExit }) {
   );
 }
 
-export default function App() {
-  const [screen, setScreen] = useState("dashboard");
+export default function App({ gameSlug = null }) {
+  const router = useRouter();
+  const gameConfig = gameSlug ? GAME_PAGES[gameSlug] : null;
+  const [screen, setScreen] = useState(() => gameConfig ? "game-menu" : "dashboard");
   const [gamePuzzles, setGamePuzzles] = useState(() => starterPuzzles.map(preparePuzzle));
   const [imageMode, setImageMode] = useState("included");
   const [traceSession, setTraceSession] = useState(null);
@@ -486,17 +615,19 @@ export default function App() {
   const [flipTopic, setFlipTopic] = useState("mixed");
   const [drawingSelection, setDrawingSelection] = useState({ mode: "free", templateId: null });
   const app = useMemo(() => {
-    if (screen === "setup") return <GameSetup onBack={() => setScreen("dashboard")} onStart={(nextPuzzles, mode) => { setGamePuzzles(nextPuzzles); setImageMode(mode); setScreen("game"); }} />;
-    if (screen === "game") return <Game gamePuzzles={gamePuzzles} imageMode={imageMode} onExit={() => setScreen("dashboard")} />;
-    if (screen === "tracing-setup") return <TracingSetup brand={<Brand compact />} onBack={() => setScreen("dashboard")} onStart={(items, startIndex) => { setTraceSession({ items, startIndex }); setScreen("tracing-game"); }} />;
-    if (screen === "tracing-game" && traceSession) return <TracingGame brand={<Brand compact />} items={traceSession.items} startIndex={traceSession.startIndex} onExit={() => setScreen("dashboard")} />;
-    if (screen === "letter-setup") return <LetterFlashSetup brand={<Brand compact />} onBack={() => setScreen("dashboard")} onStart={(mode) => { setLetterMode(mode); setScreen("letter-game"); }} />;
-    if (screen === "letter-game") return <LetterFlashGame brand={<Brand compact />} mode={letterMode} onExit={() => setScreen("dashboard")} />;
-    if (screen === "flip-setup") return <WordFlipSetup brand={<Brand compact />} onBack={() => setScreen("dashboard")} onStart={(topic) => { setFlipTopic(topic); setScreen("flip-game"); }} />;
-    if (screen === "flip-game") return <WordFlipGame brand={<Brand compact />} topic={flipTopic} onExit={() => setScreen("dashboard")} />;
-    if (screen === "drawing-setup") return <DrawingSetup brand={<Brand compact />} onBack={() => setScreen("dashboard")} onStart={(selection) => { setDrawingSelection(selection); setScreen("drawing-game"); }} />;
-    if (screen === "drawing-game") return <DrawingGame brand={<Brand compact />} selection={drawingSelection} onExit={() => setScreen("dashboard")} />;
-    return <Dashboard onSelectWordGame={() => setScreen("setup")} onSelectTracing={() => setScreen("tracing-setup")} onSelectLetters={() => setScreen("letter-setup")} onSelectWordFlip={() => setScreen("flip-setup")} onSelectDrawing={() => setScreen("drawing-setup")} />;
-  }, [screen, gamePuzzles, imageMode, traceSession, letterMode, flipTopic, drawingSelection]);
+    const backTarget = gameConfig ? "game-menu" : "dashboard";
+    if (screen === "game-menu" && gameConfig) return <GameMenu game={gameConfig} onBack={() => router.push("/")} onStart={() => setScreen(gameConfig.setupScreen)} />;
+    if (screen === "setup") return <GameSetup onBack={() => setScreen(backTarget)} onStart={(nextPuzzles, mode) => { setGamePuzzles(nextPuzzles); setImageMode(mode); setScreen("game"); }} />;
+    if (screen === "game") return <Game gamePuzzles={gamePuzzles} imageMode={imageMode} onExit={() => setScreen(backTarget)} />;
+    if (screen === "tracing-setup") return <TracingSetup brand={<Brand compact />} onBack={() => setScreen(backTarget)} onStart={(items, startIndex) => { setTraceSession({ items, startIndex }); setScreen("tracing-game"); }} />;
+    if (screen === "tracing-game" && traceSession) return <TracingGame brand={<Brand compact />} items={traceSession.items} startIndex={traceSession.startIndex} onExit={() => setScreen(backTarget)} />;
+    if (screen === "letter-setup") return <LetterFlashSetup brand={<Brand compact />} onBack={() => setScreen(backTarget)} onStart={(mode) => { setLetterMode(mode); setScreen("letter-game"); }} />;
+    if (screen === "letter-game") return <LetterFlashGame brand={<Brand compact />} mode={letterMode} onExit={() => setScreen(backTarget)} />;
+    if (screen === "flip-setup") return <WordFlipSetup brand={<Brand compact />} onBack={() => setScreen(backTarget)} onStart={(topic) => { setFlipTopic(topic); setScreen("flip-game"); }} />;
+    if (screen === "flip-game") return <WordFlipGame brand={<Brand compact />} topic={flipTopic} onExit={() => setScreen(backTarget)} />;
+    if (screen === "drawing-setup") return <DrawingSetup brand={<Brand compact />} onBack={() => setScreen(backTarget)} onStart={(selection) => { setDrawingSelection(selection); setScreen("drawing-game"); }} />;
+    if (screen === "drawing-game") return <DrawingGame brand={<Brand compact />} selection={drawingSelection} onExit={() => setScreen(backTarget)} />;
+    return <Dashboard onSelectWordGame={() => router.push("/games/guess-the-word")} onSelectTracing={() => router.push("/games/tracing")} onSelectLetters={() => router.push("/games/letter-flashcards")} onSelectWordFlip={() => router.push("/games/word-flip-cards")} onSelectDrawing={() => router.push("/games/draw-color")} />;
+  }, [screen, gamePuzzles, imageMode, traceSession, letterMode, flipTopic, drawingSelection, gameConfig, router]);
   return app;
 }

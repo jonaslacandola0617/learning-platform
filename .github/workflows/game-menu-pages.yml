@@ -22,11 +22,14 @@ jobs:
       - name: Set up Node
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 24
           cache: npm
 
       - name: Install dependencies
         run: npm ci
+
+      - name: Repair temporary patch helper
+        run: node scripts/fix-patch-game-menu-pages.mjs
 
       - name: Apply game menu page refactor
         run: node scripts/patch-game-menu-pages.mjs

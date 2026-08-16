@@ -29,7 +29,7 @@ jobs:
         run: npm ci
 
       - name: Restore previous drawing layout
-        run: node scripts/restore-drawing-sidebar-layout.mjs
+        run: node scripts/run-restore-drawing-sidebar-layout.mjs
 
       - name: Build
         run: npm run build

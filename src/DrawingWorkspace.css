@@ -1,0 +1,355 @@
+.drawing-mode-options-four {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.worksheet-file-input {
+  display: none;
+}
+
+.upload-mode-preview {
+  width: 100%;
+  min-height: 118px;
+  display: grid;
+  place-items: center;
+  position: relative;
+}
+
+.upload-sheet {
+  width: 72px;
+  height: 86px;
+  display: grid;
+  place-items: center;
+  border: 3px solid #26344a;
+  border-radius: 13px;
+  color: var(--blue);
+  background: #fff;
+  font: 900 31px/1 'Baloo 2';
+  box-shadow: 7px 8px 0 #dce7f5;
+}
+
+.upload-mode-preview i {
+  position: absolute;
+  right: 12%;
+  bottom: 8px;
+  padding: 6px 9px;
+  border-radius: 10px;
+  color: #fff;
+  background: var(--blue);
+  font-style: normal;
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: .55px;
+}
+
+.worksheet-file-row {
+  margin-top: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 15px 16px;
+  border: 1px dashed #b9cce3;
+  border-radius: 15px;
+  background: #f8fbff;
+}
+
+.worksheet-file-row > div {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.worksheet-file-row strong {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--navy);
+  font-size: 13px;
+}
+
+.worksheet-file-row small {
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.worksheet-file-error {
+  margin: 10px 0 0;
+  color: var(--red);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.drawing-game-shell-wide {
+  width: min(1540px, calc(100% - 32px));
+  margin: 28px auto 56px;
+}
+
+.drawing-game-shell-wide .drawing-game-heading {
+  max-width: 1220px;
+}
+
+.drawing-toolbar {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+  margin-bottom: 14px;
+  padding: 13px 14px;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: rgba(255,255,255,.96);
+  box-shadow: 0 8px 26px rgba(20,65,123,.07);
+}
+
+.drawing-toolbar-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 42px;
+}
+
+.drawing-toolbar-group + .drawing-toolbar-group {
+  padding-left: 14px;
+  border-left: 1px solid var(--line);
+}
+
+.drawing-toolbar-label {
+  flex: 0 0 auto;
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: .65px;
+  text-transform: uppercase;
+}
+
+.drawing-toolbar-label strong {
+  color: var(--navy);
+}
+
+.drawing-toolbar-colors {
+  flex: 1 1 520px;
+}
+
+.drawing-color-grid-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  flex-wrap: wrap;
+}
+
+.drawing-color-grid-toolbar button {
+  width: 30px;
+  height: 30px;
+  border-width: 3px;
+}
+
+.drawing-toolbar-brush {
+  flex: 0 1 280px;
+}
+
+.drawing-toolbar-brush input[type="range"] {
+  width: 145px;
+  accent-color: var(--blue);
+}
+
+.drawing-toolbar-brush-dot {
+  flex: 0 0 auto;
+  display: block;
+  border-radius: 50%;
+  box-shadow: 0 0 0 1px rgba(16,36,82,.18);
+}
+
+.drawing-toolbar-actions {
+  margin-left: auto;
+}
+
+.tool-button {
+  min-height: 38px;
+  border: 1px solid var(--line);
+  border-radius: 11px;
+  padding: 8px 12px;
+  color: var(--blue);
+  background: #fff;
+  font-size: 11px;
+  font-weight: 900;
+  white-space: nowrap;
+}
+
+.tool-button:hover:not(:disabled) {
+  border-color: #9ebce0;
+  background: var(--sky);
+}
+
+.tool-button.selected {
+  border-color: var(--blue);
+  color: #fff;
+  background: var(--blue);
+}
+
+.tool-button:disabled {
+  cursor: default;
+  opacity: .38;
+}
+
+.pdf-page-controls {
+  flex: 0 0 auto;
+}
+
+.pdf-page-controls span {
+  min-width: 58px;
+  text-align: center;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.pdf-page-controls strong {
+  color: var(--navy);
+}
+
+.drawing-board-wrap-wide {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  border-radius: 24px;
+}
+
+.drawing-board-large {
+  width: 100%;
+  height: auto;
+  display: block;
+  aspect-ratio: 20 / 13;
+  background: #fff;
+}
+
+.drawing-board-large.is-erasing {
+  cursor: cell;
+}
+
+.worksheet-board-status {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 28px;
+  color: var(--blue);
+  background: rgba(248,251,255,.88);
+  backdrop-filter: blur(4px);
+  font: 900 16px 'Nunito';
+  text-align: center;
+  pointer-events: none;
+}
+
+.worksheet-board-status.is-error {
+  color: var(--red);
+}
+
+.drawing-workspace-note {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 10px 4px 0;
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 800;
+}
+
+@media (max-width: 1050px) {
+  .drawing-mode-options-four {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .drawing-toolbar-colors {
+    flex-basis: 100%;
+  }
+
+  .drawing-toolbar-group:nth-child(2) {
+    padding-left: 0;
+    border-left: 0;
+  }
+
+  .drawing-toolbar-actions {
+    margin-left: 0;
+  }
+}
+
+@media (max-width: 700px) {
+  .drawing-game-shell-wide {
+    width: min(100% - 16px, 1540px);
+    margin-top: 16px;
+  }
+
+  .drawing-mode-options-four {
+    grid-template-columns: 1fr;
+  }
+
+  .worksheet-file-row {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .worksheet-file-row .secondary-button {
+    width: 100%;
+  }
+
+  .drawing-toolbar {
+    align-items: stretch;
+    gap: 10px;
+    padding: 11px;
+  }
+
+  .drawing-toolbar-group,
+  .drawing-toolbar-colors,
+  .drawing-toolbar-brush,
+  .drawing-toolbar-actions,
+  .pdf-page-controls {
+    width: 100%;
+    flex: 1 1 100%;
+    padding: 0 !important;
+    border-left: 0 !important;
+  }
+
+  .drawing-toolbar-colors {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .drawing-color-grid-toolbar {
+    width: 100%;
+  }
+
+  .drawing-color-grid-toolbar button {
+    width: 29px;
+    height: 29px;
+  }
+
+  .drawing-toolbar-brush input[type="range"] {
+    flex: 1;
+    min-width: 100px;
+  }
+
+  .drawing-toolbar-actions {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .pdf-page-controls {
+    justify-content: center;
+  }
+
+  .drawing-board-wrap-wide {
+    border-radius: 17px;
+  }
+
+  .drawing-board-large {
+    min-height: 410px;
+  }
+
+  .drawing-workspace-note {
+    flex-direction: column;
+    gap: 4px;
+  }
+}

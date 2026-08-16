@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Tuklas logo">
+  <g transform="rotate(-3 256 256)">
+    <rect x="101" y="111" width="320" height="320" rx="86" fill="#b88507"/>
+    <rect x="91" y="88" width="320" height="320" rx="86" fill="#ffd43b" stroke="#e8aa12" stroke-width="18"/>
+    <path d="M164 163c0-13 10-23 23-23h139c13 0 23 10 23 23v23c0 13-10 23-23 23h-37v145c0 13-10 23-23 23h-25c-13 0-23-10-23-23V209h-31c-13 0-23-10-23-23v-23Z" fill="#1559b7"/>
+  </g>
+</svg>

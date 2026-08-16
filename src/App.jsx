@@ -3,7 +3,6 @@
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
-import styles from "./GameMenu.module.css";
 import { puzzles as starterPuzzles } from "./puzzles";
 import { FluentEmoji } from "./FluentEmoji";
 import { getBuiltInDictionary, getBuiltInWords, WORD_TOPICS } from "./topicWords";
@@ -273,51 +272,6 @@ function Dashboard({ onSelectWordGame, onSelectTracing, onSelectLetters, onSelec
 }
 
 
-function GameMenu({ game, onBack, onStart }) {
-  return (
-    <div className={`platform-page ${styles.menuPage}`}>
-      <nav className="platform-nav">
-        <button className="back-link" onClick={onBack}>← Dashboard</button>
-        <Brand compact />
-        <span className="nav-step">Game menu</span>
-      </nav>
-
-      <main className={styles.shell}>
-        <section className={styles.hero}>
-          <div className={styles.copy}>
-            <span className="eyebrow">{game.eyebrow}</span>
-            <h1>{game.title}</h1>
-            <p>{game.description}</p>
-            <button className="primary-button" onClick={onStart}>{game.cta} <span>→</span></button>
-          </div>
-
-          <div className={`${styles.visual} ${styles[game.theme]}`} aria-hidden="true">
-            <span className={styles.visualRing} />
-            <FluentEmoji emoji={game.emoji} name={game.emojiName} alt="" className={styles.menuEmoji} size={178} />
-            <span className={styles.sparkOne}>✦</span>
-            <span className={styles.sparkTwo}>★</span>
-          </div>
-        </section>
-
-        <section className={styles.infoSection}>
-          <div className={styles.infoHeading}>
-            <span className="eyebrow">BEFORE YOU PLAY</span>
-            <h2>What you can do</h2>
-          </div>
-          <div className={styles.infoGrid}>
-            {game.highlights.map(([title, description], index) => (
-              <article className={styles.infoCard} key={title}>
-                <span className={styles.infoNumber}>{String(index + 1).padStart(2, "0")}</span>
-                <h3>{title}</h3>
-                <p>{description}</p>
-              </article>
-            ))}
-          </div>
-        </section>
-      </main>
-    </div>
-  );
-}
 
 function GameSetup({ onBack, onStart }) {
   const [roundCount, setRoundCount] = useState(5);
@@ -607,7 +561,7 @@ function Game({ gamePuzzles, imageMode, onExit }) {
 export default function App({ gameSlug = null }) {
   const router = useRouter();
   const gameConfig = gameSlug ? GAME_PAGES[gameSlug] : null;
-  const [screen, setScreen] = useState(() => gameConfig ? "game-menu" : "dashboard");
+  const [screen, setScreen] = useState(() => gameConfig ? gameConfig.setupScreen : "dashboard");
   const [gamePuzzles, setGamePuzzles] = useState(() => starterPuzzles.map(preparePuzzle));
   const [imageMode, setImageMode] = useState("included");
   const [traceSession, setTraceSession] = useState(null);
@@ -615,18 +569,18 @@ export default function App({ gameSlug = null }) {
   const [flipTopic, setFlipTopic] = useState("mixed");
   const [drawingSelection, setDrawingSelection] = useState({ mode: "free", templateId: null });
   const app = useMemo(() => {
-    const backTarget = gameConfig ? "game-menu" : "dashboard";
-    if (screen === "game-menu" && gameConfig) return <GameMenu game={gameConfig} onBack={() => router.push("/")} onStart={() => setScreen(gameConfig.setupScreen)} />;
-    if (screen === "setup") return <GameSetup onBack={() => setScreen(backTarget)} onStart={(nextPuzzles, mode) => { setGamePuzzles(nextPuzzles); setImageMode(mode); setScreen("game"); }} />;
-    if (screen === "game") return <Game gamePuzzles={gamePuzzles} imageMode={imageMode} onExit={() => setScreen(backTarget)} />;
-    if (screen === "tracing-setup") return <TracingSetup brand={<Brand compact />} onBack={() => setScreen(backTarget)} onStart={(items, startIndex) => { setTraceSession({ items, startIndex }); setScreen("tracing-game"); }} />;
-    if (screen === "tracing-game" && traceSession) return <TracingGame brand={<Brand compact />} items={traceSession.items} startIndex={traceSession.startIndex} onExit={() => setScreen(backTarget)} />;
-    if (screen === "letter-setup") return <LetterFlashSetup brand={<Brand compact />} onBack={() => setScreen(backTarget)} onStart={(mode) => { setLetterMode(mode); setScreen("letter-game"); }} />;
-    if (screen === "letter-game") return <LetterFlashGame brand={<Brand compact />} mode={letterMode} onExit={() => setScreen(backTarget)} />;
-    if (screen === "flip-setup") return <WordFlipSetup brand={<Brand compact />} onBack={() => setScreen(backTarget)} onStart={(topic) => { setFlipTopic(topic); setScreen("flip-game"); }} />;
-    if (screen === "flip-game") return <WordFlipGame brand={<Brand compact />} topic={flipTopic} onExit={() => setScreen(backTarget)} />;
-    if (screen === "drawing-setup") return <DrawingSetup brand={<Brand compact />} onBack={() => setScreen(backTarget)} onStart={(selection) => { setDrawingSelection(selection); setScreen("drawing-game"); }} />;
-    if (screen === "drawing-game") return <DrawingGame brand={<Brand compact />} selection={drawingSelection} onExit={() => setScreen(backTarget)} />;
+    const setupBack = () => gameConfig ? router.push("/") : setScreen("dashboard");
+    const gameBackTarget = gameConfig ? gameConfig.setupScreen : "dashboard";
+    if (screen === "setup") return <GameSetup onBack={setupBack} onStart={(nextPuzzles, mode) => { setGamePuzzles(nextPuzzles); setImageMode(mode); setScreen("game"); }} />;
+    if (screen === "game") return <Game gamePuzzles={gamePuzzles} imageMode={imageMode} onExit={() => setScreen(gameBackTarget)} />;
+    if (screen === "tracing-setup") return <TracingSetup brand={<Brand compact />} onBack={setupBack} onStart={(items, startIndex) => { setTraceSession({ items, startIndex }); setScreen("tracing-game"); }} />;
+    if (screen === "tracing-game" && traceSession) return <TracingGame brand={<Brand compact />} items={traceSession.items} startIndex={traceSession.startIndex} onExit={() => setScreen(gameBackTarget)} />;
+    if (screen === "letter-setup") return <LetterFlashSetup brand={<Brand compact />} onBack={setupBack} onStart={(mode) => { setLetterMode(mode); setScreen("letter-game"); }} />;
+    if (screen === "letter-game") return <LetterFlashGame brand={<Brand compact />} mode={letterMode} onExit={() => setScreen(gameBackTarget)} />;
+    if (screen === "flip-setup") return <WordFlipSetup brand={<Brand compact />} onBack={setupBack} onStart={(topic) => { setFlipTopic(topic); setScreen("flip-game"); }} />;
+    if (screen === "flip-game") return <WordFlipGame brand={<Brand compact />} topic={flipTopic} onExit={() => setScreen(gameBackTarget)} />;
+    if (screen === "drawing-setup") return <DrawingSetup brand={<Brand compact />} onBack={setupBack} onStart={(selection) => { setDrawingSelection(selection); setScreen("drawing-game"); }} />;
+    if (screen === "drawing-game") return <DrawingGame brand={<Brand compact />} selection={drawingSelection} onExit={() => setScreen(gameBackTarget)} />;
     return <Dashboard onSelectWordGame={() => router.push("/games/guess-the-word")} onSelectTracing={() => router.push("/games/tracing")} onSelectLetters={() => router.push("/games/letter-flashcards")} onSelectWordFlip={() => router.push("/games/word-flip-cards")} onSelectDrawing={() => router.push("/games/draw-color")} />;
   }, [screen, gamePuzzles, imageMode, traceSession, letterMode, flipTopic, drawingSelection, gameConfig, router]);
   return app;

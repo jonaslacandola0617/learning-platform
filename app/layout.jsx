@@ -1,6 +1,6 @@
 import "../src/App.css";
-import "../src/KidMode.css";
-import { KidMode } from "../src/KidMode";
+import "../src/FullscreenMode.css";
+import { FullscreenMode } from "../src/FullscreenMode";
 import { siteUrl } from "../src/site";
 
 export const metadata = {
@@ -29,7 +29,7 @@ export const viewport = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en-PH" style={{ colorScheme: "light" }}>
-      <body><KidMode>{children}</KidMode></body>
+      <body><FullscreenMode>{children}</FullscreenMode></body>
     </html>
   );
 }

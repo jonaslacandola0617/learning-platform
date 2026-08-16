@@ -19,7 +19,11 @@ export const metadata = {
     type: "website",
     locale: "en_PH",
   },
-  icons: { icon: "/favicon.svg" },
+  icons: {
+    icon: [{ url: "/tuklas-logo.svg", type: "image/svg+xml" }],
+    shortcut: "/tuklas-logo.svg",
+    apple: "/tuklas-logo.svg",
+  },
 };
 
 export const viewport = {

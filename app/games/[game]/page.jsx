@@ -17,7 +17,7 @@ export async function generateMetadata({ params }) {
   const { game } = await params;
   const title = GAMES[game];
   if (!title) return {};
-  return { title: title + " | Tuklas" };
+  return { title };
 }
 
 export default async function GamePage({ params }) {

@@ -1,0 +1,104 @@
+.dashboard-fullscreen-wrap {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 7px;
+  margin: 0 0 0 10px;
+  vertical-align: top;
+}
+
+.dashboard-fullscreen {
+  min-height: 48px;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 13px 7px 8px;
+  border: 1px solid rgba(255,255,255,.32);
+  border-radius: 14px;
+  cursor: pointer;
+  color: #fff;
+  background: rgba(255,255,255,.12);
+  box-shadow: inset 0 0 0 1px rgba(21,89,183,.08);
+  backdrop-filter: blur(10px);
+  font: inherit;
+  text-align: left;
+  -webkit-tap-highlight-color: transparent;
+  transition: transform .2s ease, background .2s ease, border-color .2s ease;
+}
+
+.dashboard-fullscreen:hover {
+  transform: translateY(-2px);
+  background: rgba(255,255,255,.20);
+  border-color: rgba(255,255,255,.48);
+}
+
+.dashboard-fullscreen:active {
+  transform: translateY(0) scale(.985);
+}
+
+.dashboard-fullscreen:disabled {
+  cursor: not-allowed;
+  opacity: .55;
+  transform: none;
+}
+
+.dashboard-fullscreen-icon {
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  border-radius: 10px;
+  color: #1559b7;
+  background: #fff;
+  font-size: 18px;
+  font-weight: 900;
+  box-shadow: 0 3px 10px rgba(5,42,90,.12);
+}
+
+.dashboard-fullscreen > span:last-child {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  line-height: 1.1;
+}
+
+.dashboard-fullscreen strong {
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.dashboard-fullscreen small {
+  color: #dcecff;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: .025em;
+}
+
+.dashboard-fullscreen-notice {
+  max-width: 220px;
+  color: #fff4c6;
+  font-size: 10px;
+  font-weight: 800;
+  line-height: 1.35;
+}
+
+@media (max-width: 640px) {
+  .dashboard-fullscreen-wrap {
+    display: flex;
+    width: 100%;
+    margin: 13px 0 0;
+  }
+
+  .dashboard-fullscreen {
+    width: 100%;
+    justify-content: flex-start;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dashboard-fullscreen {
+    transition: none;
+  }
+}
